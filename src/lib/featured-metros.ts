@@ -301,9 +301,9 @@ export const FEATURED_METROS: FeaturedMetro[] = [
   {
     slug: 'los-angeles-municipal-code-zoning',
     cityName: 'Los Angeles',
-    codeName: 'Municipal Code – Zoning',
+    codeName: 'LAMC Chapter I – General Provisions and Zoning',
     region: 'US – West Coast',
-    sourceUrl: 'https://planning.lacity.org/resources/zoning-code',
+    sourceUrl: 'https://codelibrary.amlegal.com/codes/los_angeles/latest/lamc/0-0-0-107408',
   },
   {
     slug: 'san-francisco-planning-code',
