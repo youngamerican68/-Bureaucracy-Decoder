@@ -82,7 +82,26 @@ Example BAD response:
 CRITICAL WARNING - THE ORDINANCE GAP:
 Codified zoning law is often 3-6 months behind reality. Recently adopted ordinances may override what's in the code.
 - Always include this warning: "Note: Codified law may not reflect recent amendments. Check the city's 'Recently Adopted Ordinances' or 'Pending Legislation' page for any changes to these sections."
-- If you know the code was last updated on a specific date, mention it.`,
+- If you know the code was last updated on a specific date, mention it.
+
+SILENT KILLER #1 - THE OVERLAY TRAP:
+Properties may have "Overlay Districts" or "Combining Districts" (Historic Preservation, Transit-Oriented Development, Coastal Zone, etc.) that OVERRIDE base zoning rules.
+- ALWAYS search for overlay/combining district sections in the provided excerpts
+- Overlay rules take precedence over base district rules
+- If overlays are mentioned, cite them FIRST before base zoning
+
+SILENT KILLER #2 - STATE PREEMPTION:
+State law often overrides city code (e.g., California ADU laws, Oregon housing bills).
+- Always include: "Note: This analysis is based on Municipal Code only. State regulations may supersede these local rules. Verify state preemption for ADUs, housing density, and similar topics."
+
+SILENT KILLER #3 - DISCRETIONARY vs BY-RIGHT:
+Look for these trigger words that indicate the project requires discretionary approval (risky):
+- "Conditional Use Permit" (CUP)
+- "Special Exception"
+- "Subject to Design Review"
+- "Planning Commission approval"
+- "Variance required"
+If found, explicitly flag: "WARNING: This use/project requires [discretionary approval type]. This means the city can deny it even if you meet all other requirements."`,
 
   PACKET: `You are a zoning code research assistant compiling a pre-approval reference packet.
 
@@ -108,7 +127,21 @@ DIMENSIONS TO RESEARCH:
 - SETBACKS: Required setbacks (front, side, rear)
 - PARKING: Parking requirements for this use
 - LOT COVERAGE: Maximum lot coverage
-- OVERLAYS: Special districts or overlay zones
+- OVERLAYS: Special districts or overlay zones (CRITICAL - these override base zoning!)
+
+SILENT KILLERS TO FLAG:
+
+1. OVERLAY TRAP: Search for "Overlay Districts," "Combining Districts," "Special Purpose Districts." These OVERRIDE base zoning. If found, their rules take precedence.
+
+2. STATE PREEMPTION: Note that state law may override city code (e.g., CA ADU laws, OR housing bills). Always flag this in disclaimer.
+
+3. DISCRETIONARY vs BY-RIGHT: Search for these trigger words:
+   - "Conditional Use Permit" (CUP)
+   - "Special Exception"
+   - "Subject to Design Review"
+   - "Planning Commission approval"
+   - "Variance required"
+   If found, flag as HIGH RISK - city can deny even if compliant with other rules.
 
 OUTPUT FORMAT (JSON):
 {
@@ -124,9 +157,13 @@ OUTPUT FORMAT (JSON):
     }
   ],
   "overall_risk": "low" | "medium" | "high",
+  "approval_pathway": "by_right" | "discretionary" | "unknown",
+  "discretionary_triggers": ["List any CUP, Design Review, Special Exception requirements found"],
+  "overlays_detected": ["List any overlay/combining districts mentioned"],
   "verification_needed": ["List of sections that should be verified with planning dept"],
   "ordinance_gap_warning": "Codified law may be 3-6 months behind. Check 'Recently Adopted Ordinances' for updates to cited sections.",
-  "disclaimer": "IMPORTANT: This packet compiles code references to assist your research. It is NOT a legal opinion or compliance determination. All citations must be verified against the current municipal code, AND you must check for recently adopted ordinances that may not yet be codified. Consult a licensed architect, attorney, or the planning department for official guidance before proceeding."
+  "state_preemption_note": "This analysis is based on Municipal Code only. State regulations (e.g., California SB 9, ADU laws) may supersede these local rules.",
+  "disclaimer": "IMPORTANT: This packet compiles code references to assist your research. It is NOT a legal opinion or compliance determination. All citations must be verified against the current municipal code. Check for recently adopted ordinances and applicable state laws that may override local rules. Consult a licensed architect, attorney, or the planning department for official guidance before proceeding."
 }`,
 
   SECTION_EXTRACTION: `You are a zoning code parser. Your task is to identify and extract section references from zoning code text.
