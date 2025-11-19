@@ -180,6 +180,8 @@ export interface FeaturedMetro {
   codeName: string;
   region: string;
   sourceUrl: string;
+  /** Code hosting platform - enables reusable scraping logic across cities */
+  codifier?: 'municode' | 'ecode360' | 'amlegal' | 'custom';
 }
 
 // =============================================================================

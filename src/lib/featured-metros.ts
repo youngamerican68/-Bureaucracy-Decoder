@@ -304,6 +304,7 @@ export const FEATURED_METROS: FeaturedMetro[] = [
     codeName: 'LAMC Chapter I – General Provisions and Zoning',
     region: 'US – West Coast',
     sourceUrl: 'https://codelibrary.amlegal.com/codes/los_angeles/latest/lamc/0-0-0-107408',
+    codifier: 'amlegal',
   },
   {
     slug: 'san-francisco-planning-code',
