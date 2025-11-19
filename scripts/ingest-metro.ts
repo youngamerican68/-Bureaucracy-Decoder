@@ -36,13 +36,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function fetchZoningCode(url: string): Promise<string> {
+async function fetchZoningCode(url: string, maxPages: number = 100): Promise<string> {
   console.log(`Fetching zoning code from: ${url}`);
 
-  // Try Firecrawl first if available
+  // Try Firecrawl crawl mode first if available (multi-page)
   if (process.env.FIRECRAWL_API_KEY) {
     try {
-      const response = await fetch('https://api.firecrawl.dev/v0/scrape', {
+      console.log(`Starting Firecrawl crawl (max ${maxPages} pages)...`);
+
+      // Start the crawl job
+      const crawlResponse = await fetch('https://api.firecrawl.dev/v1/crawl', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -50,26 +53,89 @@ async function fetchZoningCode(url: string): Promise<string> {
         },
         body: JSON.stringify({
           url,
-          pageOptions: {
+          limit: maxPages,
+          scrapeOptions: {
+            formats: ['markdown'],
             onlyMainContent: true,
-            includeHtml: false,
           },
         }),
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.data?.markdown) {
-          console.log('Successfully fetched with Firecrawl');
-          return data.data.markdown;
-        }
+      if (!crawlResponse.ok) {
+        const errorText = await crawlResponse.text();
+        throw new Error(`Crawl request failed: ${crawlResponse.status} ${errorText}`);
       }
+
+      const crawlData = await crawlResponse.json();
+      const jobId = crawlData.id;
+
+      if (!jobId) {
+        throw new Error('No job ID returned from crawl request');
+      }
+
+      console.log(`Crawl job started: ${jobId}`);
+      console.log('Waiting for crawl to complete...');
+
+      // Poll for completion
+      let attempts = 0;
+      const maxAttempts = 120; // 10 minutes max (5s intervals)
+
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait 5 seconds
+
+        const statusResponse = await fetch(`https://api.firecrawl.dev/v1/crawl/${jobId}`, {
+          headers: {
+            'Authorization': `Bearer ${process.env.FIRECRAWL_API_KEY}`,
+          },
+        });
+
+        if (!statusResponse.ok) {
+          attempts++;
+          continue;
+        }
+
+        const statusData = await statusResponse.json();
+
+        if (statusData.status === 'completed') {
+          const pages = statusData.data || [];
+          console.log(`Crawl completed! Retrieved ${pages.length} pages`);
+
+          if (pages.length === 0) {
+            throw new Error('Crawl completed but no pages were retrieved');
+          }
+
+          // Combine all page content
+          const allContent = pages
+            .map((page: any) => {
+              const pageUrl = page.metadata?.sourceURL || page.url || 'Unknown URL';
+              const content = page.markdown || '';
+              return `\n\n--- SOURCE: ${pageUrl} ---\n\n${content}`;
+            })
+            .join('\n');
+
+          console.log(`Total content: ${allContent.length} characters from ${pages.length} pages`);
+          return allContent;
+        } else if (statusData.status === 'failed') {
+          throw new Error(`Crawl failed: ${statusData.error || 'Unknown error'}`);
+        }
+
+        // Still in progress
+        const completed = statusData.completed || 0;
+        const total = statusData.total || maxPages;
+        process.stdout.write(`\r  Progress: ${completed}/${total} pages crawled...`);
+        attempts++;
+      }
+
+      throw new Error('Crawl timed out after 10 minutes');
     } catch (error) {
-      console.log('Firecrawl failed, falling back to HTTP fetch');
+      console.error('\nFirecrawl crawl failed:', error);
+      console.log('Falling back to single-page HTTP fetch...');
     }
+  } else {
+    console.log('FIRECRAWL_API_KEY not set - using basic HTTP fetch (single page only)');
   }
 
-  // Fallback to basic HTTP fetch
+  // Fallback to basic HTTP fetch (single page)
   const response = await fetch(url, {
     headers: {
       'User-Agent': 'BureaucracyDecoder/1.0 (Zoning Code Research)',
@@ -95,6 +161,7 @@ async function fetchZoningCode(url: string): Promise<string> {
     .replace(/\s+/g, ' ')
     .trim();
 
+  console.log('Warning: Only fetched single page. For comprehensive coverage, set FIRECRAWL_API_KEY');
   return text;
 }
 
