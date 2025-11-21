@@ -15,7 +15,7 @@ import { FeaturedMetro } from '@/types';
  * - US – Mountain West
  */
 
-export const FEATURED_METROS: FeaturedMetro[] = [
+export const featuredMetros: FeaturedMetro[] = [
   // === NORTHEAST ===
   {
     slug: 'nyc-zoning-resolution',
@@ -391,7 +391,7 @@ export const FEATURED_METROS: FeaturedMetro[] = [
  * Get metros grouped by region for UI display
  */
 export function getMetrosByRegion(): Record<string, FeaturedMetro[]> {
-  return FEATURED_METROS.reduce((acc, metro) => {
+  return featuredMetros.reduce((acc, metro) => {
     const region = metro.region;
     if (!acc[region]) {
       acc[region] = [];
@@ -405,12 +405,12 @@ export function getMetrosByRegion(): Record<string, FeaturedMetro[]> {
  * Find a metro by its slug
  */
 export function findMetroBySlug(slug: string): FeaturedMetro | undefined {
-  return FEATURED_METROS.find(metro => metro.slug === slug);
+  return featuredMetros.find(metro => metro.slug === slug);
 }
 
 /**
  * Get all unique regions
  */
 export function getRegions(): string[] {
-  return [...new Set(FEATURED_METROS.map(m => m.region))];
+  return [...new Set(featuredMetros.map(m => m.region))];
 }

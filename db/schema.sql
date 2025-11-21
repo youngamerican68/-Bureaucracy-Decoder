@@ -40,7 +40,7 @@ CREATE TABLE zoning_embeddings (
     content TEXT NOT NULL,
     section_ref TEXT,
     token_count INTEGER,
-    embedding vector(3072), -- text-embedding-3-large produces 3072 dimensions
+    embedding vector(1536), -- text-embedding-3-large with 1536 dimensions (pgvector limit)
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -48,11 +48,9 @@ CREATE TABLE zoning_embeddings (
 CREATE INDEX idx_zoning_embeddings_doc_id ON zoning_embeddings(doc_id);
 CREATE INDEX idx_zoning_embeddings_section_ref ON zoning_embeddings(section_ref);
 
--- IVFFlat index for vector similarity search (adjust lists based on data size)
--- For ~100k chunks, use lists = sqrt(100000) ≈ 316
+-- HNSW index for vector similarity search (supports up to 2000 dimensions)
 CREATE INDEX idx_zoning_embeddings_embedding ON zoning_embeddings
-USING ivfflat (embedding vector_cosine_ops)
-WITH (lists = 100);
+USING hnsw (embedding vector_cosine_ops);
 
 -- =============================================================================
 -- preapproval_requests: Store user requests and results
@@ -105,7 +103,7 @@ CREATE TRIGGER update_preapproval_requests_updated_at
 -- Vector similarity search function
 -- =============================================================================
 CREATE OR REPLACE FUNCTION match_zoning_sections(
-    query_embedding vector(3072),
+    query_embedding vector(1536),
     match_doc_id UUID,
     match_count INT DEFAULT 20,
     match_threshold FLOAT DEFAULT 0.5

@@ -54,6 +54,9 @@ async function fetchZoningCode(url: string, maxPages: number = 100): Promise<str
         body: JSON.stringify({
           url,
           limit: maxPages,
+          maxDiscoveryDepth: 2, // Limit crawl depth: 0=start page, 1=direct links, 2=subsections
+          allowExternalLinks: false, // Stay on same domain
+          deduplicateSimilarURLs: true, // Avoid duplicate content
           scrapeOptions: {
             formats: ['markdown'],
             onlyMainContent: true,
@@ -98,10 +101,20 @@ async function fetchZoningCode(url: string, maxPages: number = 100): Promise<str
 
         if (statusData.status === 'completed') {
           const pages = statusData.data || [];
-          console.log(`Crawl completed! Retrieved ${pages.length} pages`);
+          console.log(`\n✓ Crawl completed! Retrieved ${pages.length} pages`);
 
           if (pages.length === 0) {
             throw new Error('Crawl completed but no pages were retrieved');
+          }
+
+          // Show summary of crawled URLs
+          console.log('\nCrawled pages:');
+          pages.slice(0, 10).forEach((page: any, i: number) => {
+            const pageUrl = page.metadata?.sourceURL || page.url || 'Unknown URL';
+            console.log(`  ${i + 1}. ${pageUrl}`);
+          });
+          if (pages.length > 10) {
+            console.log(`  ... and ${pages.length - 10} more pages`);
           }
 
           // Combine all page content
@@ -113,7 +126,7 @@ async function fetchZoningCode(url: string, maxPages: number = 100): Promise<str
             })
             .join('\n');
 
-          console.log(`Total content: ${allContent.length} characters from ${pages.length} pages`);
+          console.log(`\nTotal content: ${allContent.length} characters from ${pages.length} pages`);
           return allContent;
         } else if (statusData.status === 'failed') {
           throw new Error(`Crawl failed: ${statusData.error || 'Unknown error'}`);
@@ -122,7 +135,13 @@ async function fetchZoningCode(url: string, maxPages: number = 100): Promise<str
         // Still in progress
         const completed = statusData.completed || 0;
         const total = statusData.total || maxPages;
-        process.stdout.write(`\r  Progress: ${completed}/${total} pages crawled...`);
+        const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+        const creditsUsed = statusData.creditsUsed || 0;
+
+        // Show detailed progress with percentage, pages, and credits
+        process.stdout.write(
+          `\r  Progress: ${percentage}% (${completed}/${total} pages) | Credits used: ${creditsUsed}   `
+        );
         attempts++;
       }
 

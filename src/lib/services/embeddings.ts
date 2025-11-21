@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 
 const EMBEDDING_MODEL = 'text-embedding-3-large';
-const EMBEDDING_DIMENSIONS = 3072;
+const EMBEDDING_DIMENSIONS = 1536; // Reduced from 3072 to work with pgvector index limits
 
 // Lazy-initialize OpenAI client
 let openaiClient: OpenAI | null = null;
