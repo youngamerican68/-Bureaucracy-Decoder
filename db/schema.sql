@@ -39,6 +39,7 @@ CREATE TABLE zoning_embeddings (
     chunk_index INTEGER NOT NULL,
     content TEXT NOT NULL,
     section_ref TEXT,
+    hierarchy TEXT, -- e.g., "Chapter IX > Article 1 > Division 1"
     token_count INTEGER,
     embedding vector(1536), -- text-embedding-3-large with 1536 dimensions (pgvector limit)
     created_at TIMESTAMPTZ DEFAULT NOW()
