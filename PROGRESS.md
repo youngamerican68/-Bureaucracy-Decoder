@@ -1,7 +1,80 @@
 # LA Municipal Code Scraping Progress
 
-**Last Updated:** 2025-11-22
+**Last Updated:** 2025-11-23
 **Project:** Bureaucracy Decoder - LA City Zoning & Building Code Compliance Tool
+
+---
+
+## 🎉 Latest Updates: Compliance Compass Rebranding & RAG Enhancement (Nov 23, 2025)
+
+### What Was Built:
+
+1. **✅ Context Window Retrieval Strategy**
+   - Updated `match_zoning_sections_city_wide` database function
+   - Automatically fetches neighboring chunks (chunk_index ± 1) alongside vector matches
+   - Prevents orphaned chunks from losing parent context after splitting
+   - Uses PostgreSQL CTEs with LATERAL JOIN for efficient retrieval
+   - File: `db/schema.sql`
+
+2. **✅ Height District Query Enhancement**
+   - Added specific handling in QUERY_PLANNER for Height District queries
+   - Forces searches to use exact section "12.21.1" instead of generic terms
+   - Prevents downtown-specific rules from crowding out base zoning results
+   - File: `src/lib/services/llm.ts:233-240`
+
+3. **✅ Section 12.21 Context Stamping**
+   - Created script to add context headers to all Section 12.21 chunks
+   - Stamped 8/8 chunks with 100% coverage
+   - Pattern: `[CONTEXT: Section 12.21.A Off-Street Parking]`
+   - Ensures chunks carry full legal path after chunking
+   - File: `scripts/refine-section-12-21.ts`
+
+4. **✅ Compliance Compass Rebranding (Frontend)**
+   - New headline: "Know the Rules Before You Draw the Lines."
+   - Subhead targets pre-design intelligence for architects
+   - Updated "The Challenge" section to emphasize design hours and liability
+   - Replaced "Legal Review" language with "Feasibility Study"
+   - Removed entire Team section
+   - Updated workflow demo from fence to parking example
+   - File: `src/app/page.tsx`
+
+5. **✅ Compliance Compass Rebranding (Backend)**
+   - Repositioned AI as "navigator, not oracle"
+   - Added COMPASS MODE fallback for difficult extractions
+   - Updated QA and PACKET system prompts to be citation-first
+   - Added warnings for overlay trap, state preemption, discretionary approvals
+   - File: `src/lib/services/llm.ts:70-194`
+
+6. **✅ Click-to-Scroll Citations**
+   - Implemented clickable citations in chat interface
+   - Smooth scroll to citation cards on click
+   - Highlight animation (amber ring) on target citation
+   - Conditional rendering: clickable if retrieved, gray italic if not
+   - Fuzzy citation ID matching for consistency
+   - File: `src/app/analyze/page.tsx`
+
+7. **✅ Workflow Demo Update**
+   - Updated InterfaceMockup component to match parking example
+   - Changed from fence example to Case File #2025-COMMERCIAL-C5
+   - Question: "What are the parking requirements for a 40,000 sq ft C5 mixed-use project?"
+   - Answer: "1 space per 500 sq ft = 80 Spaces"
+   - Citation: SEC. 12.21.A.4(c) — Commercial and Industrial Parking
+   - File: `src/components/landing/Diagrams.tsx`
+
+### Key Technical Decisions:
+
+- **Context Window Retrieval:** Database-level solution using CTEs prevents orphaned chunks without application-level complexity
+- **Height District Handling:** Section number precision prevents generic searches from failing
+- **Context Stamping:** Header prepending ensures chunks are self-describing
+- **Conditional Citations:** Only make retrieved citations clickable to avoid broken links
+- **Compliance Compass Positioning:** Navigator metaphor aligns brand message with AI behavior
+
+### Production Status:
+- **RAG System:** ✅ Production ready with context window retrieval
+- **Frontend:** ✅ Rebranded for architect audience
+- **Backend Prompts:** ✅ Citation-first "Compass Mode" active
+- **Chat UI:** ✅ Click-to-scroll citations implemented
+- **Git Status:** ✅ Committed (commit 982d8fc)
 
 ---
 
@@ -82,6 +155,7 @@
 | `scripts/test-parser-compatibility.ts` | Verify parser on all 3 formats | ✅ Working |
 | `scripts/test-chapter1a-chunking.ts` | Verify markdown parser on real data | ✅ Working |
 | `scripts/test-pdf-read.ts` | Test PDF parsing capabilities | ✅ Working |
+| **`scripts/refine-section-12-21.ts`** | **Context stamping for Section 12.21 chunks** | ✅ **Working (100% coverage)** |
 | `src/lib/services/chunking.ts` | Polymorphic parser for municipal code | ✅ Working |
 | `src/lib/services/embeddings.ts` | OpenAI embedding generation | ✅ Working |
 
