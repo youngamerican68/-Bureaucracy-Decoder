@@ -135,3 +135,80 @@ BEGIN
     LIMIT match_count;
 END;
 $$;
+
+-- Search across ALL documents for a given city (no doc_id filter)
+-- This allows searching across multiple chapters (e.g., LA Chapter 1, 9, 1A)
+-- Context Window Strategy: For each matched chunk, also fetch neighboring chunks
+-- (chunk_index - 1 and chunk_index + 1) to provide context for orphaned chunks
+CREATE OR REPLACE FUNCTION match_zoning_sections_city_wide(
+    query_embedding vector(1536),
+    city_slug TEXT,
+    match_count INT DEFAULT 20,
+    match_threshold FLOAT DEFAULT 0.5
+)
+RETURNS TABLE (
+    id BIGINT,
+    doc_id UUID,
+    chunk_index INT,
+    content TEXT,
+    section_ref TEXT,
+    similarity FLOAT
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH matched_chunks AS (
+        -- Step 1: Find top matches via vector search
+        SELECT
+            ze.id,
+            ze.doc_id,
+            ze.chunk_index,
+            ze.content,
+            ze.section_ref,
+            1 - (ze.embedding <=> query_embedding) AS similarity
+        FROM zoning_embeddings ze
+        JOIN zoning_docs zd ON ze.doc_id = zd.id
+        WHERE zd.slug LIKE city_slug || '%'
+          AND 1 - (ze.embedding <=> query_embedding) > match_threshold
+        ORDER BY ze.embedding <=> query_embedding
+        LIMIT match_count
+    ),
+    context_chunks AS (
+        -- Step 2: For each matched chunk, fetch the chunk before and after
+        SELECT DISTINCT
+            ze.id,
+            ze.doc_id,
+            ze.chunk_index,
+            ze.content,
+            ze.section_ref,
+            COALESCE(mc.similarity, 0.0) AS similarity
+        FROM matched_chunks mc
+        CROSS JOIN LATERAL (
+            -- Get the matched chunk itself
+            SELECT mc.id, mc.doc_id, mc.chunk_index, mc.content, mc.section_ref
+            UNION ALL
+            -- Get the chunk before (chunk_index - 1)
+            SELECT ze1.id, ze1.doc_id, ze1.chunk_index, ze1.content, ze1.section_ref
+            FROM zoning_embeddings ze1
+            WHERE ze1.doc_id = mc.doc_id
+              AND ze1.chunk_index = mc.chunk_index - 1
+            UNION ALL
+            -- Get the chunk after (chunk_index + 1)
+            SELECT ze2.id, ze2.doc_id, ze2.chunk_index, ze2.content, ze2.section_ref
+            FROM zoning_embeddings ze2
+            WHERE ze2.doc_id = mc.doc_id
+              AND ze2.chunk_index = mc.chunk_index + 1
+        ) ze
+    )
+    SELECT
+        cc.id,
+        cc.doc_id,
+        cc.chunk_index,
+        cc.content,
+        cc.section_ref,
+        cc.similarity
+    FROM context_chunks cc
+    ORDER BY cc.similarity DESC, cc.chunk_index ASC;
+END;
+$$;

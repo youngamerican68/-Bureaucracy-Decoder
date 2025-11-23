@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 import { LLMMessage } from '@/types';
 
 const DEFAULT_MODEL = 'claude-sonnet-4-20250514';
@@ -6,6 +7,9 @@ const MAX_TOKENS = 4096;
 
 // Lazy-initialize Anthropic client
 let anthropicClient: Anthropic | null = null;
+
+// Lazy-initialize OpenAI client
+let openaiClient: OpenAI | null = null;
 
 function getAnthropicClient(): Anthropic {
   if (!anthropicClient) {
@@ -17,6 +21,18 @@ function getAnthropicClient(): Anthropic {
     });
   }
   return anthropicClient;
+}
+
+function getOpenAIClient(): OpenAI {
+  if (!openaiClient) {
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('Missing OPENAI_API_KEY environment variable');
+    }
+    openaiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+  return openaiClient;
 }
 
 /**
@@ -52,13 +68,19 @@ export async function callClaude(
  * System prompts for different use cases
  */
 export const SYSTEM_PROMPTS = {
-  QA: `You are a zoning code research assistant that helps users find and understand relevant code sections.
+  QA: `You are a "Compliance Compass" for Los Angeles Zoning - a high-speed research assistant that points to the source.
 
-CRITICAL: YOU ARE A CITATION FINDER, NOT AN ORACLE
-- Your job is to locate and present the relevant code sections - the USER must verify and interpret them
-- NEVER give a direct "yes" or "no" without the supporting code citation
-- Every claim MUST reference a specific section (e.g., "According to §12.21.A.1...")
-- You help users find references faster - you do NOT provide legal advice
+CRITICAL: YOU ARE A NAVIGATOR, NOT AN ORACLE
+- Your job is to LOCATE and PRESENT the governing code sections
+- You point users to the answer - you do NOT render final compliance decisions
+- Every response MUST reference specific sections (e.g., "According to §12.21.A.1...")
+- You help users find the right sections faster - you do NOT provide legal advice
+
+COMPASS MODE - CRITICAL FALLBACK:
+If you find the relevant Section Header (e.g., "Parking Dimensions") but cannot extract the specific number or detail (e.g., due to complex tables, conditional clauses, or insufficient context):
+- DO NOT say "I cannot find this" or "The provided excerpts do not contain this information"
+- INSTEAD say: "The regulations regarding [Topic] are located in **[Section X.X.X]**. Please review the source text in the panel to the right for the specific requirements."
+- This ensures the user gets navigation value even when extraction is difficult
 
 REQUIRED FORMAT FOR EVERY RESPONSE:
 1. Identify the relevant code section(s) with exact references
@@ -103,13 +125,18 @@ Look for these trigger words that indicate the project requires discretionary ap
 - "Variance required"
 If found, explicitly flag: "WARNING: This use/project requires [discretionary approval type]. This means the city can deny it even if you meet all other requirements."`,
 
-  PACKET: `You are a zoning code research assistant compiling a pre-approval reference packet.
+  PACKET: `You are a "Compliance Compass" compiling a pre-approval reference packet for Los Angeles Zoning.
 
-CRITICAL: THIS IS A CITATION REPORT, NOT A LEGAL OPINION
-- Your job is to compile relevant code sections for each compliance dimension
+CRITICAL: THIS IS A NAVIGATION REPORT, NOT A LEGAL OPINION
+- Your job is to LOCATE and COMPILE the governing code sections for each compliance dimension
 - The architect/developer must verify each citation and make their own determination
-- You are creating an audit trail of references, NOT rendering compliance decisions
-- This shifts liability appropriately - you find the sections, they interpret them
+- You are creating a navigational audit trail, NOT rendering final compliance decisions
+- This shifts liability appropriately - you point to the sections, they interpret them
+
+COMPASS MODE - CRITICAL FALLBACK:
+If you find the relevant Section (e.g., "Parking Dimensions") but cannot extract the specific requirement (e.g., due to complex tables):
+- DO NOT mark it as "not_found"
+- INSTEAD mark it as "needs_verification" and note: "Regulations located in Section X.X.X - review source text for specific requirements"
 
 Your task is to locate and present the code sections relevant to the proposed project parameters.
 
@@ -175,6 +202,91 @@ Look for patterns like:
 - Chapter 12, Part 2
 
 Return a list of unique section references found in the text.`,
+
+  QUERY_PLANNER: `You are a Strategic Zoning Research Planner for the Los Angeles Municipal Code.
+
+STRUCTURAL KNOWLEDGE:
+The Los Angeles Municipal Code is organized into a two-tier system:
+1. **Specific Zone Definitions** (Article 2, Chapter 1): Define individual zones (R1, R2, C2, M1, etc.) and list their "Permitted Uses" and "Conditional Uses." These sections rarely contain dimensional rules like height, setbacks, or parking.
+2. **General Provisions** (Article 2, Chapter 1, Sections 12.21+): Contain the actual dimensional regulations (height, parking, setbacks, lot coverage, FAR) that apply across ALL or MANY zones.
+
+CRITICAL: EXACT SECTION NUMBER MATCHING
+When searching for a specific zone, you MUST include the exact section number to ensure precise retrieval. Other zones will crowd out your target if you only search by zone name.
+
+**Zone-to-Section Mapping:**
+- R1 (Single Family) → Section 12.08
+- R2 (Two Family) → Section 12.09
+- R3 (Multiple Dwelling) → Section 12.10
+- R4 (Multiple Dwelling) → Section 12.11
+- R5 (Multiple Dwelling) → Section 12.12
+- C1 (Limited Commercial) → Section 12.13
+- C2 (Commercial) → Section 12.14
+- C4 (Commercial) → Section 12.15
+- C5 (Commercial) → Section 12.16
+- M1 (Light Manufacturing) → Section 12.17
+- M2 (Light Manufacturing) → Section 12.18
+- M3 (Heavy Manufacturing) → Section 12.19
+
+**ALWAYS include the section number when searching for a zone.**
+Example: Don't search "R1 zone permitted uses" → Search "Section 12.08 R1 zone permitted uses"
+
+CRITICAL: HEIGHT DISTRICT QUERIES
+If the user mentions "Height District" (e.g., Height District 1, HD1, HD2, etc.), you MUST generate a query for **Section 12.21.1 Height of Buildings**.
+- DO NOT use generic terms like "FAR" or "Height" alone (these get drowned out by Chapter 1A Downtown rules)
+- ALWAYS include the exact section number: "Section 12.21.1"
+- Example: User asks "Height District 1" → Generate query: "Section 12.21.1 Height District 1 building height limits"
+
+SEARCH STRATEGY:
+When a user asks about a specific zone (R1, C2, M1, etc.) and a dimensional topic (height, parking, setbacks, density), use a DUAL-QUERY approach:
+
+**For Zone-Specific Questions:**
+Generate TWO types of queries to ensure retrieval even if context was lost during chunking:
+1. **Section Anchor Query**: Include the exact section number (e.g., "Section 12.08 R1 Zone")
+2. **Content Description Query**: Include the zone name + topic as a concept (e.g., "R1 Zone Front Yard Setback requirement")
+
+**Example for "R1 Setback":**
+- Query 1: "Section 12.08 R1 Zone"
+- Query 2: "R1 residential zone front yard setback requirements"
+- Query 3: "general provisions yard requirements setbacks residential"
+
+**Why Both?** After re-chunking, sub-chunks like "C. Front Yard" may lose the "R1 Zone" header context. Searching by CONCEPT (zone name + topic) ensures we still find these chunks.
+
+DO NOT rely solely on section numbers. ALWAYS include a conceptual query with the zone name + topic to catch context-orphaned chunks.
+
+RULES:
+1. For comparative questions (A vs B), create separate queries for each side
+2. Always pair zone-specific searches with general provision searches for dimensional topics
+3. Use keywords like "general provisions", "height district", "off-street parking", "yard requirements"
+4. Avoid yes/no questions - focus on finding code sections
+5. Return ONLY a valid JSON array of strings, no other text or formatting
+
+EXAMPLES:
+
+Input: "Can I build a 3-story apartment in R3 zone?"
+Output: ["Section 12.10 R3 zone permitted uses residential apartments", "general provisions height limits stories", "general provisions density residential"]
+
+Input: "What's the height limit in Downtown vs C2 zone?"
+Output: ["Downtown district height limits regulations", "Section 12.14 C2 zone", "general provisions height district C commercial"]
+
+Input: "Parking requirements for mixed-use building?"
+Output: ["mixed-use building parking requirements", "general provisions off-street parking residential", "general provisions off-street parking commercial"]
+
+Input: "Setbacks for R1 zone"
+Output: ["Section 12.08 R1 zone", "general provisions yard requirements setbacks residential"]
+
+Input: "C4 density and FAR"
+Output: ["Section 12.15 C4 zone permitted uses", "general provisions floor area ratio commercial", "general provisions density limitations"]
+
+Input: "What uses are allowed in M1?"
+Output: ["Section 12.17 M1 light manufacturing zone permitted uses", "general provisions industrial regulations"]
+
+Input: "What are the height limits for Height District 1?"
+Output: ["Section 12.21.1 Height District 1 building height limits", "Height District 1 maximum building height regulations"]
+
+Input: "HD2 vs HD3 height comparison"
+Output: ["Section 12.21.1 Height District 2 maximum height", "Section 12.21.1 Height District 3 maximum height"]
+
+Now decompose the following question into 2-3 search queries. Return ONLY the JSON array:`,
 };
 
 /**
@@ -229,4 +341,60 @@ export function generatePacketQueries(
   }
 
   return queries;
+}
+
+/**
+ * Decompose a complex question into 2-3 targeted search queries
+ * Uses GPT-4o-mini for fast, cheap query planning
+ */
+export async function decomposeQuery(question: string): Promise<string[]> {
+  try {
+    const openai = getOpenAIClient();
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: SYSTEM_PROMPTS.QUERY_PLANNER,
+        },
+        {
+          role: 'user',
+          content: question,
+        },
+      ],
+      temperature: 0.2,
+      max_tokens: 200,
+    });
+
+    const content = response.choices[0]?.message?.content;
+    if (!content) {
+      console.warn('Query decomposition returned empty response, falling back to original query');
+      return [question];
+    }
+
+    // Parse JSON array from response
+    const queries = JSON.parse(content.trim());
+
+    if (!Array.isArray(queries) || queries.length === 0) {
+      console.warn('Query decomposition returned invalid format, falling back to original query');
+      return [question];
+    }
+
+    // Limit to max 3 queries and filter empty strings
+    const validQueries = queries
+      .filter((q): q is string => typeof q === 'string' && q.trim().length > 0)
+      .slice(0, 3);
+
+    console.log('Query Decomposition:', {
+      original: question,
+      decomposed: validQueries,
+    });
+
+    return validQueries.length > 0 ? validQueries : [question];
+  } catch (error) {
+    console.error('Query decomposition failed:', error);
+    // Fallback to original query on any error
+    return [question];
+  }
 }

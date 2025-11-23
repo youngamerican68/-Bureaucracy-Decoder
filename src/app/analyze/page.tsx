@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { FEATURED_METROS, getMetrosByRegion } from '@/lib/featured-metros';
+import { featuredMetros, getMetrosByRegion } from '@/lib/featured-metros';
 import {
   AskZoningResponse,
   PreapprovalPacket,
@@ -54,6 +54,7 @@ function AnalyzePageContent() {
   const [answer, setAnswer] = useState<AskZoningResponse | null>(null);
   const [askLoading, setAskLoading] = useState(false);
   const [askError, setAskError] = useState<string | null>(null);
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   // Pre-Approval state
   const [userInput, setUserInput] = useState<PreapprovalUserInput>({
@@ -72,8 +73,75 @@ function AnalyzePageContent() {
   const [packetLoading, setPacketLoading] = useState(false);
   const [packetError, setPacketError] = useState<string | null>(null);
 
-  const selectedMetro = FEATURED_METROS.find((m) => m.slug === selectedCity);
+  const selectedMetro = featuredMetros.find((m) => m.slug === selectedCity);
   const metrosByRegion = getMetrosByRegion();
+
+  const scrollToCitation = (citationId: string) => {
+    const element = document.getElementById(citationId);
+    if (element) {
+      setHighlightedId(citationId);
+      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Clear highlight after 3 seconds
+      setTimeout(() => setHighlightedId(null), 3000);
+    }
+  };
+
+  const renderAnswerWithClickableCitations = (text: string, citations: any[]) => {
+    // Pattern to match citations in multiple formats:
+    // - Legal symbols: §12.21, §12.21.A, §12.21.A.1
+    // - Brackets: [Sec. 12.21], [Sec 12.21]
+    // - Full word: Section 12.08, Section 12.21.A
+    const citationPattern = /(§[\d.]+[A-Za-z0-9.]*|\[Sec\.?\s+[\d.]+[A-Za-z0-9.]*\]|Section\s+[\d.]+[A-Za-z0-9.]*)/g;
+    const parts = text.split(citationPattern);
+
+    // Build a set of normalized citation IDs for fast lookup
+    const availableCitationIds = new Set(
+      citations.map(c => `citation-${c.section_ref.replace(/[^a-zA-Z0-9]/g, '-')}`)
+    );
+
+    return parts.map((part, index) => {
+      if (part.match(citationPattern)) {
+        // Extract the section reference from the citation text
+        // Strip out symbols, brackets, and "Section" prefix to get just the numbers/letters
+        const sectionRef = part
+          .replace(/^§/, '')
+          .replace(/^\[Sec\.?\s+/, '')
+          .replace(/\]$/, '')
+          .replace(/^Section\s+/, '')
+          .trim();
+
+        // Generate consistent ID by stripping all special characters
+        const citationId = `citation-${sectionRef.replace(/[^a-zA-Z0-9]/g, '-')}`;
+
+        // Check if this citation exists in the retrieved citations
+        const isAvailable = availableCitationIds.has(citationId);
+
+        if (isAvailable) {
+          // Clickable citation (found in sidebar)
+          return (
+            <button
+              key={index}
+              onClick={() => scrollToCitation(citationId)}
+              className="text-amber-600 hover:text-amber-700 underline decoration-dotted underline-offset-2 font-medium cursor-pointer transition-colors"
+            >
+              {part}
+            </button>
+          );
+        } else {
+          // Non-clickable citation (not retrieved)
+          return (
+            <span
+              key={index}
+              className="text-gray-500 italic underline decoration-dotted underline-offset-2"
+            >
+              {part}
+            </span>
+          );
+        }
+      }
+      return part;
+    });
+  };
 
   const handleAskQuestion = async () => {
     if (!selectedCity || !question.trim()) return;
@@ -293,14 +361,12 @@ function AnalyzePageContent() {
                     {answer && (
                       <Badge
                         variant={
-                          answer.confidence === 'high'
-                            ? 'success'
-                            : answer.confidence === 'medium'
-                            ? 'warning'
-                            : 'secondary'
+                          answer.citations.length > 0 ? 'success' : 'secondary'
                         }
                       >
-                        {answer.confidence} confidence
+                        {answer.citations.length > 0
+                          ? 'Verified Sources'
+                          : 'No Sources Found'}
                       </Badge>
                     )}
                   </CardHeader>
@@ -310,8 +376,8 @@ function AnalyzePageContent() {
                     )}
                     {answer && (
                       <div className="space-y-4">
-                        <div className="prose prose-sm max-w-none">
-                          <p className="whitespace-pre-wrap">{answer.answer}</p>
+                        <div className="prose prose-sm max-w-none whitespace-pre-wrap">
+                          {renderAnswerWithClickableCitations(answer.answer, answer.citations)}
                         </div>
                         {answer.citations.length > 0 && (
                           <div>
@@ -319,19 +385,29 @@ function AnalyzePageContent() {
                               Citations
                             </h4>
                             <div className="space-y-2">
-                              {answer.citations.map((citation, i) => (
-                                <div
-                                  key={i}
-                                  className="text-xs bg-muted p-2 rounded"
-                                >
-                                  <span className="font-mono font-medium">
-                                    {citation.section_ref}
-                                  </span>
-                                  <p className="text-muted-foreground mt-1">
-                                    {citation.snippet}
-                                  </p>
-                                </div>
-                              ))}
+                              {answer.citations.map((citation, i) => {
+                                const citationId = `citation-${citation.section_ref.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                                const isHighlighted = highlightedId === citationId;
+
+                                return (
+                                  <div
+                                    key={i}
+                                    id={citationId}
+                                    className={`text-xs bg-muted p-2 rounded transition-all duration-300 ${
+                                      isHighlighted
+                                        ? 'ring-2 ring-amber-500 bg-amber-500/10 shadow-lg'
+                                        : ''
+                                    }`}
+                                  >
+                                    <span className="font-mono font-medium">
+                                      {citation.section_ref}
+                                    </span>
+                                    <p className="text-muted-foreground mt-1">
+                                      {citation.snippet}
+                                    </p>
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
