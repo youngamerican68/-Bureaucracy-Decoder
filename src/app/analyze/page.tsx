@@ -91,7 +91,8 @@ function AnalyzePageContent() {
     // - Legal symbols: §12.21, §12.21.A, §12.21.A.1
     // - Brackets: [Sec. 12.21], [Sec 12.21]
     // - Full word: Section 12.08, Section 12.21.A
-    const citationPattern = /(§[\d.]+[A-Za-z0-9.]*|\[Sec\.?\s+[\d.]+[A-Za-z0-9.]*\]|Section\s+[\d.]+[A-Za-z0-9.]*)/g;
+    // - Bold citations (DeepSeek format): **Section 12.08**, **Sec. 12.21.A**
+    const citationPattern = /(§[\d.]+[A-Za-z0-9.]*|\[Sec\.?\s+[\d.]+[A-Za-z0-9.]*\]|Section\s+[\d.]+[A-Za-z0-9.]*|\*\*Section\s+[\d.]+[A-Za-z0-9.]*\*\*|\*\*Sec\.\s+[\d.]+[A-Za-z0-9.]*\*\*)/g;
     const parts = text.split(citationPattern);
 
     // Build a set of normalized citation IDs for fast lookup
@@ -102,12 +103,15 @@ function AnalyzePageContent() {
     return parts.map((part, index) => {
       if (part.match(citationPattern)) {
         // Extract the section reference from the citation text
-        // Strip out symbols, brackets, and "Section" prefix to get just the numbers/letters
+        // Strip out symbols, brackets, "Section" prefix, and bold markdown to get just the numbers/letters
         const sectionRef = part
+          .replace(/^\*\*/, '')           // Remove leading **
+          .replace(/\*\*$/, '')           // Remove trailing **
           .replace(/^§/, '')
           .replace(/^\[Sec\.?\s+/, '')
           .replace(/\]$/, '')
           .replace(/^Section\s+/, '')
+          .replace(/^Sec\.\s+/, '')       // Remove "Sec. " prefix from bold citations
           .trim();
 
         // Generate consistent ID by stripping all special characters
@@ -115,6 +119,9 @@ function AnalyzePageContent() {
 
         // Check if this citation exists in the retrieved citations
         const isAvailable = availableCitationIds.has(citationId);
+
+        // Create clean display text (strip bold markdown for DeepSeek citations)
+        const displayText = part.replace(/^\*\*/, '').replace(/\*\*$/, '');
 
         if (isAvailable) {
           // Clickable citation (found in sidebar)
@@ -124,7 +131,7 @@ function AnalyzePageContent() {
               onClick={() => scrollToCitation(citationId)}
               className="text-amber-600 hover:text-amber-700 underline decoration-dotted underline-offset-2 font-medium cursor-pointer transition-colors"
             >
-              {part}
+              {displayText}
             </button>
           );
         } else {
@@ -134,7 +141,7 @@ function AnalyzePageContent() {
               key={index}
               className="text-gray-500 italic underline decoration-dotted underline-offset-2"
             >
-              {part}
+              {displayText}
             </span>
           );
         }

@@ -11,6 +11,9 @@ let anthropicClient: Anthropic | null = null;
 // Lazy-initialize OpenAI client
 let openaiClient: OpenAI | null = null;
 
+// Lazy-initialize OpenRouter client (for Gemini/DeepSeek routing)
+let openrouterClient: OpenAI | null = null;
+
 function getAnthropicClient(): Anthropic {
   if (!anthropicClient) {
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -35,8 +38,22 @@ function getOpenAIClient(): OpenAI {
   return openaiClient;
 }
 
+function getOpenRouterClient(): OpenAI {
+  if (!openrouterClient) {
+    if (!process.env.OPENROUTER_API_KEY) {
+      throw new Error('Missing OPENROUTER_API_KEY environment variable');
+    }
+    openrouterClient = new OpenAI({
+      baseURL: 'https://openrouter.ai/api/v1',
+      apiKey: process.env.OPENROUTER_API_KEY,
+    });
+  }
+  return openrouterClient;
+}
+
 /**
- * Call Claude with messages
+ * Call DeepSeek (via OpenRouter) with messages
+ * Switched from Claude to DeepSeek for 90% cost reduction
  */
 export async function callClaude(
   systemPrompt: string,
@@ -47,21 +64,25 @@ export async function callClaude(
     temperature?: number;
   } = {}
 ): Promise<string> {
-  const anthropic = getAnthropicClient();
-  const response = await anthropic.messages.create({
-    model: options.model || DEFAULT_MODEL,
+  const openrouter = getOpenRouterClient();
+  const response = await openrouter.chat.completions.create({
+    model: 'deepseek/deepseek-chat',
     max_tokens: options.maxTokens || MAX_TOKENS,
     temperature: options.temperature ?? 0.3,
-    system: systemPrompt,
-    messages: messages.map(m => ({
-      role: m.role as 'user' | 'assistant',
-      content: m.content,
-    })),
+    messages: [
+      {
+        role: 'system',
+        content: systemPrompt,
+      },
+      ...messages.map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content,
+      })),
+    ],
   });
 
   // Extract text from response
-  const textBlock = response.content.find(block => block.type === 'text');
-  return textBlock ? textBlock.text : '';
+  return response.choices[0]?.message?.content || '';
 }
 
 /**
@@ -345,7 +366,7 @@ export function generatePacketQueries(
 
 /**
  * Decompose a complex question into 2-3 targeted search queries
- * Uses GPT-4o-mini for fast, cheap query planning
+ * Uses GPT-4o-mini for reliable query planning (Gemini failed to follow section mapping instructions)
  */
 export async function decomposeQuery(question: string): Promise<string[]> {
   try {
