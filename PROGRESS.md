@@ -1,11 +1,49 @@
 # LA Municipal Code Scraping Progress
 
-**Last Updated:** 2025-11-23
+**Last Updated:** 2025-11-24
 **Project:** Bureaucracy Decoder - LA City Zoning & Building Code Compliance Tool
 
 ---
 
-## 🎉 Latest Updates: Compliance Compass Rebranding & RAG Enhancement (Nov 23, 2025)
+## 🎉 Latest Updates: Hybrid LLM Cost Optimization (Nov 24, 2025)
+
+### What Was Built:
+
+1. **✅ OpenRouter Integration**
+   - Added OpenRouter client for cost-efficient LLM routing
+   - Configured with baseURL: https://openrouter.ai/api/v1
+   - File: `src/lib/services/llm.ts:41-52`
+
+2. **✅ Hybrid LLM Architecture**
+   - **Planner:** GPT-4o-mini via OpenAI (reliable section mapping)
+   - **Brain:** DeepSeek via OpenRouter (90% cost reduction vs Claude)
+   - Attempted Gemini but reverted due to failed section mapping instructions
+   - Function: `decomposeQuery()` - GPT-4o-mini, `callClaude()` - DeepSeek
+
+3. **✅ DeepSeek Bold Citation Support**
+   - Added regex patterns for bold citations: `**Section 12.08**`, `**Sec. 12.21.A**`
+   - Strip asterisks from display text while maintaining clickability
+   - Backward compatible with existing citation formats (§, [Sec.], Section)
+   - File: `src/app/analyze/page.tsx:89-151`
+
+### Key Technical Decisions:
+
+- **Why not Gemini for planning?** Failed to follow R1 → Section 12.08 mapping instructions
+- **Why GPT-4o-mini?** Reliable query decomposition with exact section references
+- **Why DeepSeek for answers?** 90% cost reduction vs Claude with comparable quality
+- **Citation fix necessity:** DeepSeek outputs citations in bold markdown format
+
+### Cost Savings:
+- **Brain (Answer Generation):** 90% reduction (Claude Sonnet 4 → DeepSeek)
+- **Planner (Query Decomposition):** Already cheap (GPT-4o-mini)
+- **Net Result:** Massive cost reduction with maintained quality
+
+### Environment Variables:
+- Added `OPENROUTER_API_KEY` to `.env.local` (gitignored)
+
+---
+
+## 🎉 Previous Updates: Compliance Compass Rebranding & RAG Enhancement (Nov 23, 2025)
 
 ### What Was Built:
 
