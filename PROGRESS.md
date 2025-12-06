@@ -1,11 +1,326 @@
 # LA Municipal Code Scraping Progress
 
-**Last Updated:** 2025-11-24
+**Last Updated:** 2025-12-06
 **Project:** Bureaucracy Decoder - LA City Zoning & Building Code Compliance Tool
 
 ---
 
-## 🎉 Latest Updates: Hybrid LLM Cost Optimization (Nov 24, 2025)
+## 🎉 Latest Updates: Chat App + Hybrid RAG + Row-Level Parking Data (Dec 6, 2025)
+
+### What Was Built:
+
+1. **✅ /chat App with Clerk Authentication**
+   - New chat interface at `/chat` route with Google SSO via Clerk
+   - Example query buttons for common zoning questions
+   - Real-time streaming responses with citation highlighting
+   - Files: `src/app/chat/`, `src/app/api/chat/`, `src/middleware.ts`
+
+2. **✅ Hybrid RAG: LLM Knowledge First, RAG Confirms**
+   - Changed from strict "only use excerpts" to hybrid approach
+   - LLM uses training knowledge + RAG excerpts, clearly labeled
+   - Answers now distinguish: "Confirmed by excerpts" vs "Based on typical LA/CA practice"
+   - State preemption warnings for ADUs, SB 9, density bonus
+   - Files: `src/lib/services/packet.ts:146-152`, `src/lib/services/llm.ts:100-104`
+
+3. **✅ Surgical Re-Ingestion: §12.21.A.4 Parking Table**
+   - Created row-level chunks for parking requirements (1 chunk per use type)
+   - 12 use types: restaurant, office, retail, warehouse, hotel, medical, theater, church, school, manufacturing, gym, bank
+   - Each chunk includes keywords for better semantic matching
+   - Files: `scripts/data/parking-12.21.A.4.json`, `scripts/ingest-parking-table.ts`
+
+4. **✅ Confidence Boost for Tier-1 Sections**
+   - When tier-1 sections (§12.21.A.4, §12.22.D.33, §12.22.C.25, §12.08, §12.21.1) are cited:
+   - Confidence bumps up one level: low→medium, medium→high
+   - Parking and ADU queries now show "medium" instead of "low" confidence
+   - File: `src/lib/services/packet.ts:163-191`
+
+5. **✅ Concise Response Style**
+   - Added "RESPONSE STYLE - BE CONCISE" to QA prompt
+   - Instructs: one-sentence direct answer first, then cite, then 2-3 most important caveats
+   - Reduces wall-of-text responses for simple queries
+   - File: `src/lib/services/llm.ts:100-104`
+
+6. **✅ Database Function Fix**
+   - Fixed `match_zoning_sections_filtered` to return proper `id` (bigint) and `chunk_index`
+   - Previously returned `doc_id` as `id`, breaking RRF deduplication
+   - Applied via Supabase SQL editor
+
+### Test Results:
+
+**Before (Dec 5):**
+- "parking requirements for restaurant in C2" → "Low confidence, excerpts don't contain specific ratios"
+
+**After (Dec 6):**
+- "parking requirements for restaurant in C2" → "1 parking space for each 100 square feet of floor area" citing §12.21.A.4
+- Confidence: medium (boosted from low due to tier-1 citation)
+
+### Key Files Changed:
+
+| File | Change |
+|------|--------|
+| `src/lib/services/packet.ts` | Hybrid RAG user message + tier-1 confidence boost |
+| `src/lib/services/llm.ts` | Concise style prompt + hybrid RAG instructions |
+| `scripts/ingest-parking-table.ts` | Row-level parking ingestion script |
+| `scripts/data/parking-12.21.A.4.json` | 12 parking requirement rows with keywords |
+| `src/app/chat/` | New chat interface with Clerk auth |
+
+### Production Status:
+- **Chat App:** ✅ Live at `/chat` with Clerk SSO
+- **Hybrid RAG:** ✅ LLM knowledge + RAG confirmation active
+- **Parking Data:** ✅ 12 row-level chunks ingested (indices 963-974)
+- **Confidence Heuristic:** ✅ Tier-1 boost active
+
+---
+
+## 🔧 Previous: Query-Intent Routing (Dec 5, 2025)
+
+### What Was Built:
+
+1. **✅ Query-Intent Classification**
+   - Keyword-based classifier routes queries to relevant chapters
+   - Returns 'zoning', 'building', or 'mixed' intent based on query content
+   - Scoring: Longer keyword matches get 2x weight (stronger signal)
+   - No LLM calls - pure keyword matching for speed
+   - File: `src/lib/services/rag.ts:64-91`
+
+2. **✅ Intent-Aware Chapter Weights**
+   - Zoning queries: Boost Chapter 1 (1.3x Tier1, 1.2x other), penalize Chapter IX (0.7-0.8x)
+   - Building queries: Boost Chapter IX (1.3x Tier1, 1.2x other), penalize Chapter 1 (0.7-0.8x)
+   - Mixed queries: Neutral weighting (default behavior)
+   - File: `src/lib/services/rag.ts:158-187`
+
+3. **✅ Keyword Lists for Classification**
+   - BUILDING_CODE_KEYWORDS: 35 terms (permit, inspection, LADBS, calgreen, 91.xxx, etc.)
+   - ZONING_CODE_KEYWORDS: 40 terms (r1 zone, setback, FAR, parking requirement, 12.xxx, etc.)
+   - File: `src/lib/services/rag.ts:17-58`
+
+### RAGAS Baseline Results (With Intent Routing):
+
+| Category | Recall | Hit Rate | Status |
+|----------|--------|----------|--------|
+| **Parking** | 100% | 100% | ✓ (was 66.7%) |
+| **Height** | 83.3% | 100% | ✓ |
+| **Definitions** | 100% | 100% | ✓ |
+| **Setbacks** | 100% | 100% | ✓ |
+| **Density Bonus** | 80% | 100% | ✓ |
+| **TOC** | 50% | 100% | ✓ |
+| **Housing Fees** | 100% | 100% | ✓ |
+| **Subdivisions** | 100% | 100% | ✓ |
+| **Emergency** | 100% | 100% | ✓ |
+| **CO** | 100% | 100% | ✓ |
+| **Grading** | 75% | 100% | ✓ |
+| **Enforcement** | 100% | 100% | ✓ |
+| **Green Building** | 100% | 100% | ✓ (was 33.3%) |
+| Zoning | 75% | 75% | ⚠️ |
+| Permits | 66.7% | 66.7% | ⚠️ |
+| Hillside | 50% | 50% | ⚠️ |
+| Permits_Building | 66.7% | 66.7% | ⚠️ |
+| Inspections | 66.7% | 66.7% | ⚠️ |
+| Fees_Building | 0% | 0% | ❌ |
+
+**Overall:** Recall 80.0% ✓, Hit Rate 86.0%
+
+**Improvement from Intent Routing:**
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Recall | 69% | **80%** | +11pp ✓ |
+| Hit Rate | 76% | **86%** | +10pp |
+| Parking | 66.7% | **100%** | +33pp |
+| Green Building | 33.3% | **100%** | +67pp |
+
+**Key Benefits:**
+- Parking queries now route to zoning code (12.21.A.4) instead of being crowded by building code EV sections
+- Building queries route to Chapter IX, zoning queries to Chapter 1
+- Mixed queries (e.g., "grading permit hillside") search all chapters fairly
+
+---
+
+## 🔧 Previous: Full 3-Chapter Multi-Doc Search (Dec 5, 2025)
+
+### What Was Built:
+
+1. **✅ 3-Chapter Multi-Document Search (Chapter 1 + 1A + IX)**
+   - RAG now searches ALL THREE Los Angeles chapters in parallel
+   - Chapter 1 (traditional zoning), Chapter 1A (new zoning), Chapter IX (building code)
+   - Interleaved RRF merge ensures fair competition across chapters
+   - Tier 1 boost (3.0x) + chapter-level weights prevent cross-corpus crowding
+   - File: `src/lib/services/rag.ts`
+
+2. **✅ Chapter IX Tier 1 Sections Added**
+   - `91.106` - Permits Required
+   - `91.107` - Fees
+   - `91.108` - Inspections
+   - `91.109` - Certificate of Occupancy
+   - `91.1705` - Special Inspections
+   - `91.1704` - Structural Inspections
+   - `91.7006` - Grading Permits
+   - `91.7003` - Grading Definitions
+   - `98.0403` - Department Powers/Enforcement
+   - `99.04.100` - Green Building Residential (Basic Provisions)
+   - `99.05.100` - Green Building Non-Residential (Basic Provisions)
+
+3. **✅ RAGAS Expanded for Chapter IX**
+   - Added 17 new gold queries for building code topics
+   - Categories: permits_building, fees_building, inspections, co, grading, enforcement, green_building
+   - Total queries: 50 (20 Chapter 1 + 13 Chapter 1A + 17 Chapter IX)
+   - File: `scripts/ragas-baseline.ts`
+
+4. **✅ Interleaved RRF Merge**
+   - Solved BM25 score incompatibility across different-sized corpora
+   - Per-chapter sorting before interleaving ensures fair position-based ranking
+   - Chapter 1's #1 result now competes fairly with Chapter IX's #1 result
+
+5. **✅ Chapter-Level Weights**
+   - Non-Tier 1 sections: Chapter 1 (1.15x), Chapter 1A (1.1x), Chapter IX (0.95x)
+   - Tier 1 sections: No chapter penalty (compete fairly at 1.0x)
+   - Prevents building code from crowding out zoning for general queries
+
+**Key Technical Challenges Solved:**
+- BM25 rank values not comparable across corpora (solved with interleaved RRF)
+- Chapter IX "parking" sections (99.04.106 EV charging) crowding out 12.21.A.4 (solved with refined Tier 1 prefixes)
+- Semantic overlap between chapters (solved with chapter-level weights + intent routing)
+
+---
+
+## 🔧 Previous: Multi-Doc Search (Chapter 1 + 1A) (Dec 5, 2025)
+
+### What Was Built:
+
+1. **✅ Multi-Document Search (Chapter 1 + 1A Fusion)**
+   - RAG now searches BOTH Chapter 1 (traditional zoning) AND Chapter 1A (new zoning code)
+   - Results merged via Reciprocal Rank Fusion (RRF) with Tier 1 boosting
+   - Fetches 20 results per chapter before merge (prevents canonical section dropout)
+   - File: `src/lib/services/rag.ts`
+
+2. **✅ Chapter 1A Tier 1 Sections Added**
+   - `9.2.1` - State Density Bonus Program
+   - `9.2.2` - Affordable Housing Incentive Program
+   - `9.2.5` - Transit Oriented Incentive Program
+   - `9.2.7` - Transit Oriented Communities (TOC) Program
+   - `9.3.2` - Local Affordable Housing Incentive Program
+   - `1.5.16` - Transit Oriented Incentive Map
+   - `1.6` - Emergency Provisions
+   - `14.2` - Definitions (Measurements)
+   - `15.4` - Affordable Housing Program Fees
+   - `11.5` - Tract Maps & Conversions
+
+3. **✅ RAGAS Expanded for Chapter 1A**
+   - Added 13 new gold queries for downtown/Chapter 1A topics
+   - Categories: density_bonus, toc, housing_fees, subdivisions, emergency
+   - Total queries: 33 (20 Chapter 1 + 13 Chapter 1A)
+   - File: `scripts/ragas-baseline.ts`
+
+4. **✅ Tier 1 Boost Increased to 2.0x**
+   - Higher boost needed for multi-doc search (more results to rank)
+   - Ensures canonical sections bubble up over noise
+   - Lower threshold (0.15) for better recall
+
+### RAGAS Baseline Results (Chapter 1 + 1A Combined):
+
+**Overall:** Recall 74.2%, Hit Rate 81.8%
+
+---
+
+## 🔧 Previous: Hybrid RAG Search + RAGAS Baseline (Dec 5, 2025 AM)
+
+### What Was Built:
+
+1. **✅ Hybrid Search (BM25 + Vector + Tier 1 Boosting)**
+   - Replaced city-wide vector-only search with hybrid retrieval
+   - BM25 full-text search via `search_zoning_bm25` RPC function
+   - Reciprocal Rank Fusion (RRF) merges vector and BM25 results
+   - File: `src/lib/services/rag.ts`
+
+2. **✅ Doc ID Filtering**
+   - Prevents Chapter 9 (building code) from crowding out zoning results
+   - New RPC: `match_zoning_sections_filtered` with `filter_doc_id` param
+
+3. **✅ Coverage Guardrail System**
+   - Validates 11 Tier 1 critical sections exist before ingestion
+   - Fails fast if parking (12.21.A.4) or other critical sections missing
+   - Checks content length and required keywords
+   - File: `scripts/coverage-guardrail.ts`
+
+4. **✅ Oversized Chunk Splitting**
+   - Fixed 72K token chunk bug that caused silent embedding failures
+   - `MAX_CHUNK_TOKENS = 6000` (OpenAI limit is ~8K)
+   - Splits on lettered subsections (A., B.) and numbered items (1., 2.)
+   - File: `src/lib/services/chunking.ts`
+
+5. **✅ RAGAS Baseline Testing**
+   - 20 gold queries across 7 categories (parking, height, zoning, etc.)
+   - Measures Context Recall, Precision, and Hit Rate
+   - Results saved to `scripts/data/ragas-baseline-{date}.json`
+   - File: `scripts/ragas-baseline.ts`
+
+6. **✅ LLM Switch: DeepSeek → Gemini 2.0 Flash**
+   - Switched from slow DeepSeek to fast Gemini 2.0 Flash via OpenRouter
+   - Response time: ~15-30s → ~2-5s
+   - Model: `google/gemini-2.0-flash-001`
+   - File: `src/lib/services/llm.ts:69`
+
+7. **✅ Ingestion Process Documentation**
+   - Created factory pattern documentation for municipal code ingestion
+   - Pipeline: PDF → Chunking → Guardrail → Ingest → Hybrid Search → RAGAS Gate → Ship
+   - File: `docs/INGESTION_PROCESS.md`
+
+### RAGAS Baseline Results (Chapter I):
+
+| Metric | Before Hybrid | After Hybrid + Tier 1 Boost |
+|--------|---------------|----------------------------|
+| **Recall** | 52.5% | **92.5%** ✓ |
+| **Hit Rate** | 60% | **95%** ✓ |
+| Precision | 24% | 35% |
+| **Parking** | 0% | **100%** ✓ |
+| **Hillside** | 0% | **100%** ✓ |
+
+### Chapter I Re-Ingestion Stats:
+
+| Metric | Before Fix | After Fix |
+|--------|------------|-----------|
+| Total chunks | 280 | **963** |
+| Max tokens | 98,202 | **5,999** |
+| 12.21.A.4 present | NO | **YES (3 parts)** |
+| Coverage check | N/A | **11/11 sections pass** |
+
+### Tier 1 Critical Sections (Coverage Guardrail):
+
+| Section   | Name                        | Status |
+|-----------|-----------------------------|--------|
+| 12.21.A.4 | Off-Street Parking          | ✓      |
+| 12.21.1   | Height of Buildings         | ✓      |
+| 12.08     | R1 One-Family Zone          | ✓      |
+| 12.09     | R2 Two-Family Zone          | ✓      |
+| 12.10     | R3 Multiple Dwelling        | ✓      |
+| 12.14     | C2 Commercial Zone          | ✓      |
+| 12.03     | Definitions                 | ✓      |
+| 12.22     | Exceptions                  | ✓      |
+| 12.24     | Conditional Use Permits     | ✓      |
+| 12.21.C   | Hillside Regulations        | ✓      |
+| 12.23     | Variances                   | ✓      |
+
+### Key Technical Decisions:
+
+- **Why hybrid search?** Pure vector failed on parking queries (retrieved exceptions instead of requirements)
+- **Why BM25 OR logic?** AND logic missed results when query had stopwords
+- **Why Tier 1 boost?** Canonical sections like 12.21.A.4 need priority over edge cases
+- **Why Gemini 2.0 Flash?** DeepSeek was 15-30s, Gemini is 2-5s with same quality
+
+### Database Migrations Applied:
+
+- `add_fulltext_search_for_hybrid` - Added `content_tsv` column + GIN index
+- `add_filtered_match_zoning_sections` - Vector search with doc_id filter
+- `bm25_search_with_or_logic` - Full-text search with OR matching
+
+### Production Status:
+- **RAG Retrieval:** ✅ Hybrid search live (92.5% recall)
+- **LLM Response:** ✅ Gemini 2.0 Flash (2-5s responses)
+- **Chapter I:** ✅ Re-ingested with 963 chunks, all Tier 1 sections present
+- **RAGAS Gate:** ✅ Passed (Recall 92.5%, Hit Rate 95%)
+
+---
+
+## 🎉 Previous Updates: Hybrid LLM Cost Optimization (Nov 24, 2025)
 
 ### What Was Built:
 

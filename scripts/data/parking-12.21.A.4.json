@@ -1,0 +1,66 @@
+[
+  {
+    "useType": "Restaurants, cafes, or similar eating establishments",
+    "requirement": "1 parking space for each 100 square feet of floor area",
+    "notes": "Includes indoor and outdoor dining areas. Drive-through facilities may have additional requirements.",
+    "keywords": ["restaurant", "cafe", "dining", "eating", "food service", "bar", "tavern", "drive-through"]
+  },
+  {
+    "useType": "Office buildings, business and professional",
+    "requirement": "1 parking space for each 500 square feet of floor area",
+    "keywords": ["office", "business", "professional", "commercial", "corporate"]
+  },
+  {
+    "useType": "Retail stores and shops",
+    "requirement": "1 parking space for each 250 square feet of floor area",
+    "keywords": ["retail", "store", "shop", "sales", "merchandise", "grocery", "supermarket"]
+  },
+  {
+    "useType": "Warehouses and storage buildings",
+    "requirement": "1 parking space for each 2,000 square feet of floor area",
+    "keywords": ["warehouse", "storage", "industrial", "distribution", "logistics"]
+  },
+  {
+    "useType": "Hotels and motels",
+    "requirement": "1 parking space for each guest room",
+    "notes": "Additional spaces required for restaurants, meeting rooms, ballrooms, and other public areas within the hotel",
+    "keywords": ["hotel", "motel", "lodging", "guest room", "hospitality", "inn"]
+  },
+  {
+    "useType": "Medical and dental offices",
+    "requirement": "1 parking space for each 200 square feet of floor area",
+    "keywords": ["medical", "dental", "doctor", "clinic", "healthcare", "physician"]
+  },
+  {
+    "useType": "Theaters, auditoriums, and places of assembly",
+    "requirement": "1 parking space for each 5 seats or for each 35 square feet of floor area used for assembly purposes",
+    "keywords": ["theater", "theatre", "auditorium", "assembly", "cinema", "movie", "concert", "performance"]
+  },
+  {
+    "useType": "Churches and religious institutions",
+    "requirement": "1 parking space for each 5 seats in the main auditorium",
+    "keywords": ["church", "religious", "worship", "temple", "mosque", "synagogue", "congregation"]
+  },
+  {
+    "useType": "Schools (elementary and secondary)",
+    "requirement": "1 parking space for each classroom",
+    "notes": "High schools may require additional parking for student drivers",
+    "keywords": ["school", "education", "classroom", "elementary", "secondary", "high school", "middle school"]
+  },
+  {
+    "useType": "Manufacturing and industrial uses",
+    "requirement": "1 parking space for each 500 square feet of floor area",
+    "keywords": ["manufacturing", "industrial", "factory", "production", "fabrication"]
+  },
+  {
+    "useType": "Fitness centers and gyms",
+    "requirement": "1 parking space for each 100 square feet of floor area",
+    "keywords": ["gym", "fitness", "health club", "exercise", "workout", "recreation"]
+  },
+  {
+    "useType": "Banks and financial institutions",
+    "requirement": "1 parking space for each 250 square feet of floor area",
+    "notes": "Drive-through facilities require additional stacking lanes",
+    "keywords": ["bank", "financial", "credit union", "savings", "lending"]
+  }
+]

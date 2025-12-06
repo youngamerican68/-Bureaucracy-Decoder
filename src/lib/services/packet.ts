@@ -1,6 +1,6 @@
 import { getServerClient } from '@/lib/supabase';
 import { getMultiQueryContext, formatChunksAsContext, getRAGContext } from './rag';
-import { callClaude, SYSTEM_PROMPTS, generatePacketQueries } from './llm';
+import { callClaude, SYSTEM_PROMPTS, generatePacketQueries, decomposeQuery } from './llm';
 import {
   PreapprovalUserInput,
   PreapprovalPacket,
@@ -96,19 +96,45 @@ Based on the provided zoning code excerpts, analyze whether the proposed project
 
 /**
  * Answer a question about the zoning code
+ * Uses query decomposition for better retrieval on complex/comparative questions
  */
 export async function askZoningQuestion(
   docId: string,
   question: string
 ): Promise<AskZoningResponse> {
-  // Get RAG context
-  const { doc, chunks } = await getRAGContext(docId, question, {
-    topK: 20,
+  const supabase = getServerClient();
+
+  // STEP 1: Decompose complex questions into 2-3 targeted queries
+  // Example: "Height in Downtown vs C2" → ["Downtown height", "C2 height"]
+  const decomposedQueries = await decomposeQuery(question);
+
+  // STEP 2: Add original query to ensure we don't miss anything
+  const allQueries = [question, ...decomposedQueries];
+
+  // STEP 3: Execute parallel searches and deduplicate
+  const chunks = await getMultiQueryContext(docId, allQueries, {
+    topK: 10, // Per-query limit (3-4 queries × 10 = 30-40 chunks before dedup)
     threshold: 0.4,
   });
 
+  // STEP 4: Limit to top 25 unique chunks by similarity
+  const topChunks = chunks.slice(0, 25);
+
+  // STEP 5: Get document metadata for context formatting
+  const { data: docs } = await supabase
+    .from('zoning_docs')
+    .select('*')
+    .like('slug', 'los-angeles%')
+    .limit(1);
+
+  if (!docs || docs.length === 0) {
+    throw new Error('No Los Angeles documents found in database');
+  }
+
+  const doc = docs[0] as ZoningDoc;
+
   // Format context
-  const context = formatChunksAsContext(chunks, doc);
+  const context = formatChunksAsContext(topChunks, doc);
 
   // Call Claude
   const userMessage = `QUESTION:
@@ -117,7 +143,13 @@ ${question}
 ZONING CODE CONTEXT:
 ${context}
 
-Please answer the question based only on the provided zoning code excerpts. Always cite specific sections.`;
+Answer using your knowledge of Los Angeles zoning law combined with the provided code excerpts.
+
+Guidelines:
+- Where the excerpts contain relevant sections, cite them specifically
+- If you know something from training that the excerpts don't cover, you may include it but label it as "general knowledge" or "typical practice"
+- When the excerpts and your knowledge conflict, trust the excerpts as the authoritative local source
+- For state-preempted topics (ADUs, density bonuses, housing), note that CA state law may override local code`;
 
   const response = await callClaude(
     SYSTEM_PROMPTS.QA,
@@ -126,16 +158,50 @@ Please answer the question based only on the provided zoning code excerpts. Alwa
   );
 
   // Extract citations from the response
-  const citations = extractCitations(response, chunks);
+  const citations = extractCitations(response, topChunks);
 
-  // Determine confidence based on chunk similarities
+  // Tier-1 sections that should boost confidence when cited
+  const TIER1_CONFIDENCE_BOOST = [
+    '12.21.A.4',   // Off-Street Parking Requirements
+    '12.22.D.33',  // ADU regulations
+    '12.22.C.25',  // Density Bonus
+    '12.08',       // R1 Zone
+    '12.21.1',     // Height Districts
+  ];
+
+  // Check if any tier-1 sections are cited in the response
+  const hasTier1Citation = citations.some(c =>
+    TIER1_CONFIDENCE_BOOST.some(prefix => c.section_ref.startsWith(prefix))
+  );
+
+  // Determine confidence based on chunk similarities + tier-1 boost
   const avgSimilarity =
-    chunks.length > 0
-      ? chunks.reduce((sum, c) => sum + c.similarity, 0) / chunks.length
+    topChunks.length > 0
+      ? topChunks.reduce((sum, c) => sum + c.similarity, 0) / topChunks.length
       : 0;
 
-  const confidence: 'high' | 'medium' | 'low' =
-    avgSimilarity > 0.7 ? 'high' : avgSimilarity > 0.5 ? 'medium' : 'low';
+  let confidence: 'high' | 'medium' | 'low' =
+    avgSimilarity > 0.65 ? 'high' : avgSimilarity > 0.50 ? 'medium' : 'low';
+
+  // Boost confidence when tier-1 sections are explicitly cited
+  if (hasTier1Citation && confidence === 'low') {
+    confidence = 'medium';
+  } else if (hasTier1Citation && confidence === 'medium') {
+    confidence = 'high';
+  }
+
+  // Log similarity scores for debugging
+  console.log('Query Decomposition Results:', {
+    original: question,
+    decomposed: decomposedQueries,
+    totalChunks: chunks.length,
+    topChunks: topChunks.length,
+  });
+  console.log('Chunk Similarity Scores:', topChunks.map(c => ({
+    section: c.section_ref || 'No section',
+    similarity: c.similarity.toFixed(3)
+  })));
+  console.log('Average Similarity:', avgSimilarity.toFixed(3), '| Confidence:', confidence);
 
   return {
     answer: response,

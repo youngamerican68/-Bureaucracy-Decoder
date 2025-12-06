@@ -182,6 +182,8 @@ export interface FeaturedMetro {
   sourceUrl: string;
   /** Code hosting platform - enables reusable scraping logic across cities */
   codifier?: 'municode' | 'ecode360' | 'amlegal' | 'custom';
+  /** Availability status - 'active' means data is ingested and searchable */
+  status?: 'active' | 'coming_soon';
 }
 
 // =============================================================================
@@ -197,4 +199,30 @@ export interface ChunkingOptions {
   maxTokens?: number;
   overlapTokens?: number;
   preserveSections?: boolean;
+}
+
+// =============================================================================
+// Chat Types
+// =============================================================================
+
+export type ChatRole = 'user' | 'assistant';
+
+export interface ChatCitation {
+  section_ref: string;
+  content?: string;
+  source_url?: string;
+}
+
+export interface ChatMessage {
+  id: string;
+  role: ChatRole;
+  content: string;
+  createdAt: string;
+  citations?: ChatCitation[];
+  confidence?: string;
+}
+
+export interface ChatState {
+  messages: ChatMessage[];
+  lastUpdated: string;
 }
