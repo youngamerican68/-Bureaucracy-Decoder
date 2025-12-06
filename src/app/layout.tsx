@@ -14,8 +14,24 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Bureaucracy Decoder",
-  description: "Turn zoning text spaghetti into pre-approval packets. AI-powered zoning code analysis with citations.",
+  title: "Compliance Compass",
+  description: "AI-powered zoning code assistant for Los Angeles. Get instant answers with citations.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Compass",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  themeColor: "#f59e0b",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 // Check if Clerk is configured (key present)
