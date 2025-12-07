@@ -125,41 +125,41 @@ export const InterfaceMockup: React.FC = () => {
 };
 
 
-// --- COMPLIANCE METRIC CHART ---
+// --- RESEARCH SPEED COMPARISON ---
 export const ComplianceMetricDiagram: React.FC = () => {
-    // Comparison: Manual Review vs Bureaucracy Decoder
-    
+    // Comparison: Manual Research vs AI-Assisted Research
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center p-8 bg-stone-900 border border-stone-800 rounded-sm shadow-xl my-8">
             <div>
-                <h3 className="font-serif text-2xl mb-4 text-stone-100">Velocity of Compliance</h3>
+                <h3 className="font-serif text-2xl mb-4 text-stone-100">Faster Code Lookup</h3>
                 <p className="text-stone-400 text-lg mb-6 leading-relaxed">
-                    Complex zoning inquiries typically require hours of manual cross-referencing. Our reasoning engine reduces this to seconds while increasing citation accuracy.
+                    Finding the right zoning code sections typically requires hours of manual searching. Our AI helps you locate relevant sections in seconds — you still verify and interpret.
                 </p>
-                
+
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-3 text-sm text-stone-500">
                         <AlertCircle size={16} className="text-stone-600"/>
-                        <span>Drastic reduction in "Correction Letters"</span>
+                        <span>Use as a research starting point</span>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-stone-400">
                         <CheckCircle size={16} className="text-legal-amber"/>
-                        <span>Direct linkage to municipal code amendments</span>
+                        <span>Cites specific LAMC sections for verification</span>
                     </div>
                 </div>
             </div>
-            
+
             <div className="bg-[#151515] p-8 border border-stone-800 relative">
                 <div className="space-y-6">
                     {/* Bar 1 */}
                     <div>
                         <div className="flex justify-between text-xs font-bold tracking-widest text-stone-500 mb-2 uppercase">
-                            <span>Manual Feasibility Study</span>
-                            <span>~4.5 Hours</span>
+                            <span>Manual Code Search</span>
+                            <span>Hours</span>
                         </div>
                         <div className="w-full h-12 bg-stone-800 rounded-sm relative overflow-hidden">
                             <div className="absolute inset-y-0 left-0 w-full bg-stone-700 flex items-center px-4 text-stone-400 text-xs">
-                                <Clock size={14} className="mr-2"/> Human Paralegal
+                                <Clock size={14} className="mr-2"/> Reading PDFs & Cross-Referencing
                             </div>
                         </div>
                     </div>
@@ -167,27 +167,25 @@ export const ComplianceMetricDiagram: React.FC = () => {
                     {/* Bar 2 */}
                     <div>
                         <div className="flex justify-between text-xs font-bold tracking-widest text-stone-500 mb-2 uppercase">
-                            <span>AI Compliance Check</span>
-                            <span className="text-legal-orange">~0.8 Seconds</span>
+                            <span>AI-Assisted Lookup</span>
+                            <span className="text-legal-orange">Seconds</span>
                         </div>
                         <div className="w-full h-12 bg-legal-orange/10 rounded-sm relative overflow-hidden border border-legal-orange/20 shadow-[0_0_15px_rgba(234,88,12,0.1)]">
-                            <motion.div 
+                            <motion.div
                                 initial={{ width: 0 }}
-                                whileInView={{ width: '2%' }}
-                                transition={{ duration: 1, ease: "easeOut" }}
-                                className="absolute inset-y-0 left-0 bg-legal-orange flex items-center px-4 overflow-visible whitespace-nowrap text-white text-xs font-bold"
-                            >
-                                
-                            </motion.div>
+                                whileInView={{ width: '15%' }}
+                                transition={{ duration: 0.8, ease: "easeOut" }}
+                                className="absolute inset-y-0 left-0 bg-legal-orange"
+                            />
                             <div className="absolute inset-0 flex items-center px-4 text-legal-orange font-bold text-xs">
-                                AI Reasoning Engine
+                                <span className="ml-12">Cited Answers (Verify Before Using)</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div className="mt-6 text-center">
-                     <div className="inline-block px-3 py-1 bg-green-900/30 text-green-400 border border-green-800/50 text-xs font-bold rounded-full">
-                        99.9% Cost Reduction
+                     <div className="inline-block px-3 py-1 bg-stone-800 text-stone-400 border border-stone-700 text-xs font-bold rounded-full">
+                        Research Aid — Not a Substitute for Professional Review
                      </div>
                 </div>
             </div>

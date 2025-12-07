@@ -7,9 +7,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { HeroInterface3D } from '@/components/landing/QuantumScene';
-import { InterfaceMockup, ComplianceMetricDiagram } from '@/components/landing/Diagrams';
-import { Menu, X, Scale, Building2, ScrollText, ShieldCheck, Database, Zap, PlayCircle, Lock } from 'lucide-react';
+import { ComplianceMetricDiagram } from '@/components/landing/Diagrams';
+import { AnimatedDemo } from '@/components/landing/AnimatedDemo';
+import { Menu, X, Scale, Building2, ScrollText, ShieldCheck, Database, Zap, MessageSquare } from 'lucide-react';
 
 const TeamMember = ({ name, role, delay }: { name: string, role: string, delay: string }) => {
   return (
@@ -66,10 +66,11 @@ const LandingPage: React.FC = () => {
             <a href="#interface" onClick={scrollToSection('interface')} className="hover:text-legal-amber transition-colors cursor-pointer uppercase">The System</a>
             <a href="#impact" onClick={scrollToSection('impact')} className="hover:text-legal-amber transition-colors cursor-pointer uppercase">Impact</a>
             <Link
-              href="/dashboard"
-              className="px-6 py-2 bg-gradient-to-r from-legal-orange to-amber-600 text-white rounded-sm hover:opacity-90 transition-opacity shadow-sm shadow-orange-900/20 cursor-pointer border border-orange-500/20"
+              href="/chat"
+              className="px-6 py-2 bg-gradient-to-r from-legal-orange to-amber-600 text-white rounded-sm hover:opacity-90 transition-opacity shadow-sm shadow-orange-900/20 cursor-pointer border border-orange-500/20 flex items-center gap-2"
             >
-              REQUEST ACCESS
+              <MessageSquare size={14} />
+              TRY CHAT
             </Link>
           </div>
 
@@ -100,32 +101,43 @@ const LandingPage: React.FC = () => {
           <div className="flex flex-col items-start text-left max-w-xl mx-auto lg:mx-0">
             <div className="inline-flex items-center gap-2 mb-8 px-4 py-1 border border-amber-500/30 text-amber-500 text-[10px] tracking-[0.2em] uppercase font-bold rounded-full bg-amber-900/10 backdrop-blur-sm shadow-[0_0_15px_rgba(245,158,11,0.1)]">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_10px_rgba(245,158,11,0.8)]"></span>
-              Municipal Intelligence v2.0
+              Los Angeles Zoning Copilot
             </div>
 
             <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium leading-[1.1] mb-6 text-stone-100 drop-shadow-2xl tracking-tight">
-              Know the Rules Before You Draw the Lines.
+              Know LA Zoning Rules Before You Draw the Lines.
             </h1>
 
             <p className="text-lg md:text-xl text-stone-400 font-light leading-relaxed mb-10 border-l-2 border-stone-800 pl-6">
-              The ultimate pre-design intelligence tool. Instantly identify height limits, setbacks, and use permissions so you never design a non-compliant building.
+              An AI copilot trained on the Los Angeles Municipal Code. Get instant, cited answers to zoning questions — parking ratios, setbacks, height limits, ADU rules — without digging through 400-page PDFs.
             </p>
 
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-5 mb-12 w-full sm:w-auto">
+            {/* CTA */}
+            <div className="flex flex-col sm:flex-row gap-5 mb-6 w-full sm:w-auto">
                <Link
-                href="/dashboard"
+                href="/chat"
                 className="px-8 py-4 bg-gradient-to-r from-legal-orange to-amber-600 text-white text-sm font-bold tracking-[0.1em] uppercase rounded-sm hover:scale-105 transition-transform shadow-[0_0_30px_rgba(234,88,12,0.3)] cursor-pointer border border-orange-400/30 text-center sm:text-left flex items-center justify-center gap-2"
               >
-                Try a Live Zoning Query
+                <MessageSquare size={18} />
+                Try LA Zoning Chat
               </Link>
-              <a
-                href="#video"
-                className="px-8 py-4 bg-stone-900/50 hover:bg-stone-800 text-stone-300 border border-stone-700 text-sm font-bold tracking-[0.1em] uppercase rounded-sm transition-all cursor-pointer flex items-center justify-center gap-3 group"
-              >
-                <PlayCircle size={18} className="group-hover:text-legal-amber transition-colors"/>
-                Watch Workflow (30s)
-              </a>
+            </div>
+
+            {/* Disclaimer */}
+            <p className="text-xs text-stone-500 mb-8 max-w-md leading-relaxed">
+              Informational only — not legal advice. Results may be incomplete. Verify with{' '}
+              <a href="https://codelibrary.amlegal.com/codes/los_angeles" target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline">official sources</a>.{' '}
+              <Link href="/terms" className="text-amber-500 hover:underline">Terms of Use</Link>
+            </p>
+
+            {/* For: line */}
+            <div className="flex items-center gap-3 mb-8">
+              <span className="text-xs text-stone-500 uppercase tracking-wider">For:</span>
+              <div className="flex gap-2">
+                <span className="text-xs px-3 py-1 bg-stone-800/50 border border-stone-700 rounded-full text-stone-400">Architects</span>
+                <span className="text-xs px-3 py-1 bg-stone-800/50 border border-stone-700 rounded-full text-stone-400">Developers</span>
+                <span className="text-xs px-3 py-1 bg-stone-800/50 border border-stone-700 rounded-full text-stone-400">Land-Use Attorneys</span>
+              </div>
             </div>
 
             {/* Trust Bar */}
@@ -133,29 +145,29 @@ const LandingPage: React.FC = () => {
                <div className="flex items-center gap-2 text-stone-500">
                   <ShieldCheck size={16} className="text-legal-amber shrink-0" />
                   <div className="flex flex-col">
-                      <span className="text-[10px] font-bold tracking-wider text-stone-400">SOURCE-FIRST RETRIEVAL</span>
-                      <span className="text-[9px] text-stone-600">Always cited</span>
+                      <span className="text-[10px] font-bold tracking-wider text-stone-400">LAMC CHAPTERS I, 1A, IX</span>
+                      <span className="text-[9px] text-stone-600">Full coverage</span>
                   </div>
                </div>
                <div className="flex items-center gap-2 text-stone-500">
                   <Database size={16} className="text-legal-amber shrink-0" />
                   <div className="flex flex-col">
-                      <span className="text-[10px] font-bold tracking-wider text-stone-400">1.4M+ TOKENS</span>
-                      <span className="text-[9px] text-stone-600">Verified Code</span>
+                      <span className="text-[10px] font-bold tracking-wider text-stone-400">1,400+ SECTIONS</span>
+                      <span className="text-[9px] text-stone-600">Indexed & searchable</span>
                   </div>
                </div>
                <div className="flex items-center gap-2 text-stone-500">
                   <Zap size={16} className="text-legal-amber shrink-0" />
                   <div className="flex flex-col">
-                      <span className="text-[10px] font-bold tracking-wider text-stone-400">0.8s SPEED</span>
-                      <span className="text-[9px] text-stone-600">Retrieval Time</span>
+                      <span className="text-[10px] font-bold tracking-wider text-stone-400">CITED ANSWERS</span>
+                      <span className="text-[9px] text-stone-600">§12.21, §12.14, etc.</span>
                   </div>
                </div>
                <div className="flex items-center gap-2 text-stone-500">
                   <Scale size={16} className="text-legal-amber shrink-0" />
                   <div className="flex flex-col">
-                      <span className="text-[10px] font-bold tracking-wider text-stone-400">AUDITABLE</span>
-                      <span className="text-[9px] text-stone-600">Full Trail</span>
+                      <span className="text-[10px] font-bold tracking-wider text-stone-400">HYBRID RAG</span>
+                      <span className="text-[9px] text-stone-600">Vector + keyword search</span>
                   </div>
                </div>
             </div>
@@ -164,9 +176,9 @@ const LandingPage: React.FC = () => {
           {/* Right Column: The Proof (Visual) */}
           <div className="relative h-full w-full flex items-center justify-center lg:justify-end">
             <div className="absolute inset-0 bg-gradient-to-l from-legal-dark/50 to-transparent z-20 pointer-events-none lg:hidden"></div>
-             {/* Negative margin on large screens to pull it right */}
-             <div className="w-full lg:w-[120%] lg:-mr-[10%] relative z-10">
-                <HeroInterface3D />
+             {/* Animated demo showing real app interface */}
+             <div className="w-full relative z-10">
+                <AnimatedDemo />
              </div>
           </div>
 
@@ -183,10 +195,27 @@ const LandingPage: React.FC = () => {
             </div>
             <div className="md:col-span-8 text-lg text-stone-400 leading-relaxed space-y-6">
               <p>
-                <span className="text-6xl float-left mr-4 mt-[-12px] font-serif text-legal-amber opacity-80">U</span>rban development is stifled by the sheer density of municipal codes. The Los Angeles Municipal Code alone spans thousands of pages, filled with cross-references, conditional clauses, and amendments dating back decades.
+                <span className="text-6xl float-left mr-4 mt-[-12px] font-serif text-legal-amber opacity-80">L</span>os Angeles zoning lives across hundreds of pages of LAMC Chapter I, plus overlays, specific plans, and ordinances that don&apos;t show up in a simple zone label. Chapter 1A covers Downtown. Chapter IX is the Building Code.
               </p>
+
+              {/* Proof points */}
+              <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                <li className="flex items-center gap-2 text-stone-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-legal-amber"></span>
+                  400+ pages of base code
+                </li>
+                <li className="flex items-center gap-2 text-stone-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-legal-amber"></span>
+                  Dozens of specific plans
+                </li>
+                <li className="flex items-center gap-2 text-stone-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-legal-amber"></span>
+                  Frequent amendments
+                </li>
+              </ul>
+
               <p>
-                <strong className="text-stone-100 font-medium">Interpreting these regulations burns valuable design hours and introduces liability risk before a project even starts.</strong> <strong className="text-stone-100 font-medium">Bureaucracy Decoder</strong> utilizes advanced natural language understanding to parse, index, and reason over this unstructured legal data, effectively democratizing access to regulatory compliance.
+                <strong className="text-stone-100 font-medium">We&apos;ve ingested and structured all three chapters</strong> — over 1,400 sections — so you can ask questions in plain language and get back the relevant code sections with exact citations like <span className="text-legal-amber">§12.21.A.4</span> or <span className="text-legal-amber">§12.14.C.1</span>, not guesswork.
               </p>
             </div>
           </div>
@@ -201,26 +230,26 @@ const LandingPage: React.FC = () => {
             <div className="container mx-auto px-6 relative z-10">
                 <div className="text-center mb-12">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-stone-900 text-stone-400 text-xs font-bold tracking-widest uppercase rounded-full mb-6 border border-stone-800 shadow-sm">
-                        <ScrollText size={14} className="text-legal-amber"/> Neural Reasoning
+                        <ScrollText size={14} className="text-legal-amber"/> Hybrid RAG Search
                     </div>
                     <h2 className="font-serif text-4xl md:text-5xl mb-4 text-stone-100">From Query to Citation</h2>
-                    <p className="text-stone-500 max-w-xl mx-auto">Watch the system analyze a complex zoning query and retrieve the exact legal grounding.</p>
+                    <p className="text-stone-500 max-w-xl mx-auto">Ask about parking in C2, setbacks in R1, or ADU rules — get the exact LAMC section with cited text.</p>
                 </div>
 
-                <InterfaceMockup />
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 max-w-5xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                     <div className="p-6 bg-stone-900/50 border border-stone-800 backdrop-blur-sm hover:border-stone-700 transition-colors">
-                        <h4 className="font-serif text-lg mb-2 text-stone-100">Instant Feasibility Checks</h4>
-                        <p className="text-sm text-stone-500 leading-relaxed">Validate parking ratios, FAR, and density bonuses in seconds, not hours.</p>
+                        <h4 className="font-serif text-lg mb-2 text-stone-100">Ask a Real Question</h4>
+                        <p className="text-sm text-stone-500 leading-relaxed mb-3">Type your zoning question in plain English.</p>
+                        <code className="text-xs bg-stone-800 text-amber-400 px-2 py-1 rounded font-mono">&quot;What&apos;s the max FAR in C2-1?&quot;</code>
                     </div>
                     <div className="p-6 bg-stone-900/50 border border-stone-800 backdrop-blur-sm hover:border-stone-700 transition-colors">
-                        <h4 className="font-serif text-lg mb-2 text-stone-100">Site Constraint Analysis</h4>
-                        <p className="text-sm text-stone-500 leading-relaxed">Identify hidden triggers like Methane Zones or Hillside ordinances before you commit to a site.</p>
+                        <h4 className="font-serif text-lg mb-2 text-stone-100">Get the Relevant Code</h4>
+                        <p className="text-sm text-stone-500 leading-relaxed mb-3">We retrieve the exact LAMC section with context.</p>
+                        <code className="text-xs bg-stone-800 text-amber-400 px-2 py-1 rounded font-mono">§12.21.1.A.1</code>
                     </div>
                     <div className="p-6 bg-stone-900/50 border border-stone-800 backdrop-blur-sm hover:border-stone-700 transition-colors">
-                        <h4 className="font-serif text-lg mb-2 text-stone-100">Verifiable Citations</h4>
-                        <p className="text-sm text-stone-500 leading-relaxed">Every assertion is backed by a clickable, verifiable link to the official city code.</p>
+                        <h4 className="font-serif text-lg mb-2 text-stone-100">Verify & Validate</h4>
+                        <p className="text-sm text-stone-500 leading-relaxed">Click through to amlegal.com to confirm. Check overlays, specific plans, and site conditions.</p>
                     </div>
                 </div>
             </div>
@@ -230,7 +259,7 @@ const LandingPage: React.FC = () => {
         <section id="impact" className="py-24 bg-legal-dark border-t border-stone-900">
              <div className="container mx-auto px-6">
                 <div className="max-w-4xl mx-auto text-center mb-12">
-                    <h2 className="font-serif text-4xl md:text-5xl mb-6 text-stone-100">Quantifiable Efficiency</h2>
+                    <h2 className="font-serif text-4xl md:text-5xl mb-6 text-stone-100">Accelerate Your Research</h2>
                     <div className="w-24 h-1 bg-legal-orange mx-auto opacity-50"></div>
                 </div>
 
@@ -244,9 +273,9 @@ const LandingPage: React.FC = () => {
                              <Building2 size={24} />
                          </div>
                          <div>
-                             <h4 className="font-serif text-xl mb-2 text-stone-100">Accelerated Development</h4>
+                             <h4 className="font-serif text-xl mb-2 text-stone-100">Faster Initial Research</h4>
                              <p className="text-stone-400 text-sm leading-relaxed">
-                                 Reducing the "feasibility study" phase from weeks to minutes allows developers to assess viability instantly, unlocking housing supply.
+                                 Get quick, cited answers to common zoning questions. Use as a starting point for feasibility research — always verify with official sources.
                              </p>
                          </div>
                      </div>
@@ -255,9 +284,9 @@ const LandingPage: React.FC = () => {
                              <Scale size={24} />
                          </div>
                          <div>
-                             <h4 className="font-serif text-xl mb-2 text-stone-100">Regulatory Transparency</h4>
+                             <h4 className="font-serif text-xl mb-2 text-stone-100">Code Navigation Aid</h4>
                              <p className="text-stone-400 text-sm leading-relaxed">
-                                 By making the code accessible, we reduce the asymmetry of information between large firms and individual homeowners.
+                                 Find relevant LAMC sections faster. We help you locate the right code sections — you make the final determination.
                              </p>
                          </div>
                      </div>
@@ -271,29 +300,39 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-start gap-12">
             <div>
                 <div className="text-stone-100 font-serif font-bold text-3xl mb-4">Bureaucracy Decoder</div>
-                <p className="text-sm max-w-xs leading-relaxed text-stone-600">
-                    Decoding the complexity of the modern city through advanced machine learning and legal reasoning.
+                <p className="text-sm max-w-xs leading-relaxed text-stone-600 mb-4">
+                    AI-powered zoning code research for architects, developers, and land-use professionals.
                 </p>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-amber-900/20 border border-amber-500/30 rounded-sm">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    <span className="text-xs font-bold tracking-wider text-amber-500">CURRENTLY LIVE: LOS ANGELES</span>
+                </div>
             </div>
 
             <div className="flex gap-12 text-xs tracking-widest font-bold uppercase text-stone-600">
                 <div className="flex flex-col gap-4">
-                    <span className="text-stone-100">Platform</span>
-                    <a href="#" className="hover:text-legal-amber transition-colors">API Access</a>
-                    <a href="#" className="hover:text-legal-amber transition-colors">Documentation</a>
-                    <a href="#" className="hover:text-legal-amber transition-colors">Enterprise</a>
+                    <span className="text-stone-100">Coverage</span>
+                    <span className="text-stone-500">LAMC Chapter I (Zoning)</span>
+                    <span className="text-stone-500">LAMC Chapter 1A (Downtown)</span>
+                    <span className="text-stone-500">LAMC Chapter IX (Building)</span>
                 </div>
                 <div className="flex flex-col gap-4">
-                    <span className="text-stone-100">Company</span>
-                    <a href="#" className="hover:text-legal-amber transition-colors">About</a>
-                    <a href="#" className="hover:text-legal-amber transition-colors">Careers</a>
-                    <a href="#" className="hover:text-legal-amber transition-colors">Contact</a>
+                    <span className="text-stone-100">Coming Soon</span>
+                    <span className="text-stone-600">San Francisco</span>
+                    <span className="text-stone-600">New York City</span>
+                    <span className="text-stone-600">More cities...</span>
                 </div>
             </div>
         </div>
-        <div className="container mx-auto px-6 mt-16 pt-8 border-t border-stone-900 flex flex-col md:flex-row justify-between items-center text-xs text-stone-700">
-            <span>© 2025 Bureaucracy Decoder Inc. All rights reserved.</span>
-            <span>Los Angeles • New York • London</span>
+        <div className="container mx-auto px-6 mt-16 pt-8 border-t border-stone-900 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-stone-700">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <span>© 2025 Leafspire LLC · Pennsylvania</span>
+              <span className="hidden sm:inline text-stone-800">·</span>
+              <span>Informational only — not legal advice. Verify with official sources.</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <Link href="/terms" className="text-stone-500 hover:text-amber-500 transition-colors">Terms of Use</Link>
+            </div>
         </div>
       </footer>
     </div>

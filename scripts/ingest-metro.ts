@@ -12,7 +12,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { featuredMetros } from '../src/lib/featured-metros';
 import { generateEmbeddings, estimateTokenCount } from '../src/lib/services/embeddings';
-import { chunkDocument } from '../src/lib/services/chunking';
+import { chunkMunicipalCode, RegulationChunk } from '../src/lib/services/chunking';
 
 // Check for required environment variables
 const requiredEnvVars = [
@@ -232,8 +232,8 @@ async function ingestMetro(slug: string) {
           code_name: metro.codeName,
           region: metro.region,
           source_url: metro.sourceUrl,
-          is_featured: metro.isFeatured,
-          source_type: 'municode',
+          is_featured: metro.status === 'active',
+          source_type: metro.codifier || 'municode',
           status: 'processing',
         })
         .select()
@@ -263,12 +263,12 @@ async function ingestMetro(slug: string) {
 
     // Step 3: Chunk the document
     console.log('Chunking document...');
-    const chunks = chunkDocument(content);
+    const chunks: RegulationChunk[] = chunkMunicipalCode(content, metro.sourceUrl);
     console.log(`Created ${chunks.length} chunks`);
 
     // Step 4: Generate embeddings
     console.log('Generating embeddings (this may take a few minutes)...');
-    const chunkTexts = chunks.map(c => c.content);
+    const chunkTexts = chunks.map(c => c.full_text);
     const embeddings = await generateEmbeddings(chunkTexts);
     console.log(`Generated ${embeddings.length} embeddings`);
 
@@ -277,9 +277,9 @@ async function ingestMetro(slug: string) {
     const embeddingRecords = chunks.map((chunk, index) => ({
       doc_id: docId,
       chunk_index: index,
-      content: chunk.content,
-      section_ref: chunk.sectionRef,
-      token_count: estimateTokenCount(chunk.content),
+      content: chunk.full_text,
+      section_ref: chunk.section_ref,
+      token_count: chunk.token_count,
       embedding: embeddings[index],
     }));
 

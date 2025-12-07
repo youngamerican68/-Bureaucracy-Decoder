@@ -155,6 +155,60 @@ export type Database = {
           }
         ];
       };
+      zoning_feedback: {
+        Row: {
+          id: string;
+          message_id: string;
+          user_id: string;
+          rating: string;
+          query: string;
+          response: string | null;
+          section_refs: string[] | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          message_id: string;
+          user_id: string;
+          rating: string;
+          query: string;
+          response?: string | null;
+          section_refs?: string[] | null;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          message_id?: string;
+          user_id?: string;
+          rating?: string;
+          query?: string;
+          response?: string | null;
+          section_refs?: string[] | null;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
+      zoning_usage: {
+        Row: {
+          id: string;
+          user_id: string;
+          date: string;
+          count: number;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          date?: string;
+          count?: number;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          date?: string;
+          count?: number;
+        };
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -175,6 +229,43 @@ export type Database = {
           section_ref: string | null;
           similarity: number;
         }[];
+      };
+      match_zoning_sections_filtered: {
+        Args: {
+          query_embedding: number[];
+          filter_doc_id: string;
+          match_count?: number;
+          match_threshold?: number;
+        };
+        Returns: {
+          id: number;
+          doc_id: string;
+          chunk_index: number;
+          content: string;
+          section_ref: string | null;
+          similarity: number;
+        }[];
+      };
+      search_zoning_bm25: {
+        Args: {
+          query_text: string;
+          filter_doc_id: string;
+          top_k?: number;
+        };
+        Returns: {
+          id: number;
+          doc_id: string;
+          chunk_index: number;
+          content: string;
+          section_ref: string | null;
+          rank: number;
+        }[];
+      };
+      increment_usage: {
+        Args: {
+          p_user_id: string;
+        };
+        Returns: number;
       };
     };
     Enums: {

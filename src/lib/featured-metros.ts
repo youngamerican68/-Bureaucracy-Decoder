@@ -23,6 +23,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Resolution',
     region: 'US – Northeast',
     sourceUrl: 'https://zr.planning.nyc.gov/',
+    status: 'coming_soon',
   },
   {
     slug: 'boston-zoning-code',
@@ -30,6 +31,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Northeast',
     sourceUrl: 'https://www.boston.gov/departments/inspectional-services/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'philadelphia-zoning-code',
@@ -37,6 +39,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Northeast',
     sourceUrl: 'https://www.phila.gov/documents/zoning-code/',
+    status: 'coming_soon',
   },
   {
     slug: 'pittsburgh-zoning-code',
@@ -44,6 +47,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Northeast',
     sourceUrl: 'https://pittsburghpa.gov/dcp/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'newark-zoning-regulations',
@@ -51,6 +55,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Regulations',
     region: 'US – Northeast',
     sourceUrl: 'https://www.newarknj.gov/departments/planning-zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'jersey-city-zoning-code',
@@ -58,6 +63,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Northeast',
     sourceUrl: 'https://www.jerseycitynj.gov/cityhall/planningdivision/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'providence-zoning-ordinance',
@@ -65,6 +71,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Northeast',
     sourceUrl: 'https://www.providenceri.gov/planning/zoning/',
+    status: 'coming_soon',
   },
   {
     slug: 'baltimore-zoning-code',
@@ -72,6 +79,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Northeast',
     sourceUrl: 'https://planning.baltimorecity.gov/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'dc-zoning-regulations',
@@ -79,6 +87,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Regulations',
     region: 'US – Northeast',
     sourceUrl: 'https://dcoz.dc.gov/zoning-regulations',
+    status: 'coming_soon',
   },
 
   // === SOUTHEAST ===
@@ -88,6 +97,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southeast',
     sourceUrl: 'https://www.miamigov.com/Government/Departments-Organizations/Planning/Zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'atlanta-zoning-ordinance',
@@ -95,6 +105,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Southeast',
     sourceUrl: 'https://www.atlantaga.gov/government/departments/city-planning/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'charlotte-zoning-ordinance',
@@ -102,6 +113,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Southeast',
     sourceUrl: 'https://charlottenc.gov/planning/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'nashville-zoning-code',
@@ -109,6 +121,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southeast',
     sourceUrl: 'https://www.nashville.gov/departments/codes/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'orlando-zoning-code',
@@ -116,6 +129,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Land Development Code',
     region: 'US – Southeast',
     sourceUrl: 'https://www.orlando.gov/Our-Government/Records-and-Documents/Land-Development-Code',
+    status: 'coming_soon',
   },
   {
     slug: 'tampa-zoning-code',
@@ -123,6 +137,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southeast',
     sourceUrl: 'https://www.tampa.gov/land-development',
+    status: 'coming_soon',
   },
   {
     slug: 'jacksonville-zoning-code',
@@ -130,6 +145,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southeast',
     sourceUrl: 'https://www.coj.net/departments/planning/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'raleigh-unified-development-ordinance',
@@ -137,6 +153,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Unified Development Ordinance',
     region: 'US – Southeast',
     sourceUrl: 'https://raleighnc.gov/planning/unified-development-ordinance',
+    status: 'coming_soon',
   },
   {
     slug: 'new-orleans-comprehensive-zoning-ordinance',
@@ -144,6 +161,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Comprehensive Zoning Ordinance',
     region: 'US – Southeast',
     sourceUrl: 'https://nola.gov/city-planning/zoning/',
+    status: 'coming_soon',
   },
   {
     slug: 'richmond-zoning-ordinance',
@@ -151,6 +169,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Southeast',
     sourceUrl: 'https://www.rva.gov/planning-development-review/zoning',
+    status: 'coming_soon',
   },
 
   // === MIDWEST ===
@@ -160,6 +179,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Midwest',
     sourceUrl: 'https://www.chicago.gov/city/en/depts/dcd/supp_info/zoning_ordinance.html',
+    status: 'coming_soon',
   },
   {
     slug: 'detroit-zoning-ordinance',
@@ -167,6 +187,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Midwest',
     sourceUrl: 'https://detroitmi.gov/departments/planning-and-development-department/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'minneapolis-zoning-code',
@@ -174,6 +195,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.minneapolismn.gov/government/government-data/datasource/zoning-code/',
+    status: 'coming_soon',
   },
   {
     slug: 'milwaukee-zoning-code',
@@ -181,6 +203,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://city.milwaukee.gov/DCD/Planning/ZoningCode',
+    status: 'coming_soon',
   },
   {
     slug: 'columbus-zoning-code',
@@ -188,6 +211,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.columbus.gov/planning/zoning/',
+    status: 'coming_soon',
   },
   {
     slug: 'indianapolis-zoning-ordinance',
@@ -195,6 +219,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Midwest',
     sourceUrl: 'https://www.indy.gov/activity/zoning-ordinance',
+    status: 'coming_soon',
   },
   {
     slug: 'kansas-city-zoning-development-code',
@@ -202,6 +227,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning & Development Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.kcmo.gov/city-hall/departments/city-planning-development/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'st-louis-zoning-code',
@@ -209,6 +235,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.stlouis-mo.gov/government/departments/planning/zoning/',
+    status: 'coming_soon',
   },
   {
     slug: 'cleveland-zoning-code',
@@ -216,6 +243,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.clevelandohio.gov/CityofCleveland/Home/Government/CityAgencies/CityPlanning/Zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'cincinnati-zoning-code',
@@ -223,6 +251,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Midwest',
     sourceUrl: 'https://www.cincinnati-oh.gov/buildings/zoning/',
+    status: 'coming_soon',
   },
 
   // === SOUTHWEST ===
@@ -232,6 +261,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Code of Ordinances - Development',
     region: 'US – Southwest',
     sourceUrl: 'https://www.houstontx.gov/planning/DevelopRegs/',
+    status: 'coming_soon',
   },
   {
     slug: 'dallas-development-code',
@@ -239,6 +269,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Development Code',
     region: 'US – Southwest',
     sourceUrl: 'https://dallascityhall.com/departments/sustainabledevelopment/Pages/development-code.aspx',
+    status: 'coming_soon',
   },
   {
     slug: 'san-antonio-unified-development-code',
@@ -246,6 +277,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Unified Development Code',
     region: 'US – Southwest',
     sourceUrl: 'https://www.sanantonio.gov/DSD/Resources/UnifiedDevelopmentCode',
+    status: 'coming_soon',
   },
   {
     slug: 'austin-land-development-code',
@@ -253,6 +285,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Land Development Code',
     region: 'US – Southwest',
     sourceUrl: 'https://www.austintexas.gov/department/land-development-code',
+    status: 'coming_soon',
   },
   {
     slug: 'fort-worth-zoning-ordinance',
@@ -260,6 +293,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Southwest',
     sourceUrl: 'https://www.fortworthtexas.gov/departments/development-services/zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'phoenix-zoning-ordinance',
@@ -267,6 +301,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Southwest',
     sourceUrl: 'https://www.phoenix.gov/pdd/pz/zoning-ordinance',
+    status: 'coming_soon',
   },
   {
     slug: 'tucson-land-use-code',
@@ -274,6 +309,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Land Use Code',
     region: 'US – Southwest',
     sourceUrl: 'https://www.tucsonaz.gov/pdsd/land-use-code',
+    status: 'coming_soon',
   },
   {
     slug: 'albuquerque-integrated-development-ordinance',
@@ -281,6 +317,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Integrated Development Ordinance',
     region: 'US – Southwest',
     sourceUrl: 'https://www.cabq.gov/planning/integrated-development-ordinance',
+    status: 'coming_soon',
   },
   {
     slug: 'el-paso-zoning-code',
@@ -288,6 +325,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southwest',
     sourceUrl: 'https://www.elpasotexas.gov/planning/zoning/',
+    status: 'coming_soon',
   },
   {
     slug: 'oklahoma-city-zoning-code',
@@ -295,6 +333,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Southwest',
     sourceUrl: 'https://www.okc.gov/departments/planning/current-planning/zoning',
+    status: 'coming_soon',
   },
 
   // === WEST COAST ===
@@ -305,6 +344,7 @@ export const featuredMetros: FeaturedMetro[] = [
     region: 'US – West Coast',
     sourceUrl: 'https://codelibrary.amlegal.com/codes/los_angeles/latest/lamc/0-0-0-107408',
     codifier: 'amlegal',
+    status: 'active',
   },
   {
     slug: 'san-francisco-planning-code',
@@ -312,6 +352,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Planning Code',
     region: 'US – West Coast',
     sourceUrl: 'https://sfplanning.org/resource/planning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'san-diego-municipal-code-land-development',
@@ -319,6 +360,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Land Development Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.sandiego.gov/development-services/land-development-code',
+    status: 'coming_soon',
   },
   {
     slug: 'san-jose-zoning-ordinance',
@@ -326,6 +368,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – West Coast',
     sourceUrl: 'https://www.sanjoseca.gov/your-government/departments/planning-building-code-enforcement/planning-division/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'seattle-land-use-code',
@@ -333,6 +376,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Land Use Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.seattle.gov/sdci/codes/land-use-code',
+    status: 'coming_soon',
   },
   {
     slug: 'portland-zoning-code',
@@ -340,6 +384,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.portland.gov/bps/zoning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'oakland-planning-code',
@@ -347,6 +392,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Planning Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.oaklandca.gov/topics/planning-code',
+    status: 'coming_soon',
   },
   {
     slug: 'sacramento-zoning-code',
@@ -354,6 +400,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.cityofsacramento.org/Community-Development/Planning/Zoning',
+    status: 'coming_soon',
   },
   {
     slug: 'long-beach-zoning-code',
@@ -361,6 +408,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – West Coast',
     sourceUrl: 'https://www.longbeach.gov/lbds/planning/advance/code/',
+    status: 'coming_soon',
   },
 
   // === MOUNTAIN WEST ===
@@ -370,6 +418,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Code',
     region: 'US – Mountain West',
     sourceUrl: 'https://www.denvergov.org/Government/Agencies-Departments-Offices/Community-Planning-and-Development/Denver-Zoning-Code',
+    status: 'coming_soon',
   },
   {
     slug: 'las-vegas-unified-development-code',
@@ -377,6 +426,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Unified Development Code',
     region: 'US – Mountain West',
     sourceUrl: 'https://www.lasvegasnevada.gov/Government/Departments/Planning/Unified-Development-Code',
+    status: 'coming_soon',
   },
   {
     slug: 'salt-lake-city-zoning-ordinance',
@@ -384,6 +434,7 @@ export const featuredMetros: FeaturedMetro[] = [
     codeName: 'Zoning Ordinance',
     region: 'US – Mountain West',
     sourceUrl: 'https://www.slc.gov/planning/zoning/',
+    status: 'coming_soon',
   },
 ];
 

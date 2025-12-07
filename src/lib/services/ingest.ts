@@ -1,6 +1,6 @@
 import { getServerClient } from '@/lib/supabase';
 import { generateEmbeddings } from './embeddings';
-import { chunkText, cleanExtractedText } from './chunking';
+import { chunkMunicipalCode, RegulationChunk } from './chunking';
 import { ZoningDoc } from '@/types';
 
 interface IngestOptions {
@@ -113,20 +113,14 @@ export async function ingestZoningCode(
     console.log(`Crawling ${doc.source_url}...`);
     const crawlResult = await crawlUrl(doc.source_url);
 
-    // Clean the extracted text
-    const cleanedText = cleanExtractedText(crawlResult.content);
-
-    if (!cleanedText || cleanedText.length < 100) {
+    // Check for sufficient content
+    if (!crawlResult.content || crawlResult.content.length < 100) {
       throw new Error('Insufficient content extracted from source URL');
     }
 
-    // Chunk the text
-    console.log(`Chunking text (${cleanedText.length} chars)...`);
-    const chunks = chunkText(cleanedText, {
-      maxTokens: 1000,
-      overlapTokens: 100,
-      preserveSections: true,
-    });
+    // Chunk the text using the new municipal code chunker
+    console.log(`Chunking text (${crawlResult.content.length} chars)...`);
+    const chunks: RegulationChunk[] = chunkMunicipalCode(crawlResult.content, doc.source_url);
 
     console.log(`Created ${chunks.length} chunks`);
 
@@ -138,17 +132,17 @@ export async function ingestZoningCode(
 
     // Generate embeddings in batches
     console.log('Generating embeddings...');
-    const chunkContents = chunks.map(c => c.content);
+    const chunkContents = chunks.map(c => c.full_text);
     const embeddings = await generateEmbeddings(chunkContents);
 
     // Insert chunks with embeddings
     console.log('Storing embeddings...');
     const embeddingRows = chunks.map((chunk, i) => ({
       doc_id: docId,
-      chunk_index: chunk.chunkIndex,
-      content: chunk.content,
-      section_ref: chunk.sectionRef,
-      token_count: chunk.tokenCount,
+      chunk_index: i,
+      content: chunk.full_text,
+      section_ref: chunk.section_ref,
+      token_count: chunk.token_count,
       embedding: embeddings[i],
     }));
 

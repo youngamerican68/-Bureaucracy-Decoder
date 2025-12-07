@@ -32,7 +32,7 @@ const CODE_NAME = 'Chapter IX - Building Regulations';
 const SOURCE_URL = 'https://codelibrary.amlegal.com/codes/los_angeles/latest/lamc/0-0-0-172082';
 
 const TOKEN_LIMIT = 7000; // Safety valve threshold
-const MAX_TOKEN_HARD_LIMIT = 8000; // OpenAI's actual limit is 8191
+const MAX_TOKEN_HARD_LIMIT = 7500; // Target 7500 to account for token estimation error (OpenAI's actual limit is 8191)
 const EMBEDDING_BATCH_SIZE = 100; // OpenAI batch limit
 const DB_INSERT_BATCH_SIZE = 50; // Supabase insert batch size
 
@@ -91,11 +91,20 @@ function splitOversizedChunk(chunk: RegulationChunk): ProcessedChunk[] {
       // If this subsection is still too big, truncate it
       if (subsectionTokens > MAX_TOKEN_HARD_LIMIT) {
         console.log(`    ⚠️  Subsection ${subsections[i].ref} still too large (${subsectionTokens} tokens). Truncating.`);
-        const truncatedContent = subsectionContent.substring(0, MAX_TOKEN_HARD_LIMIT * 4); // ~4 chars per token
+        // Truncate aggressively and re-check token count
+        let truncatedContent = subsectionContent.substring(0, MAX_TOKEN_HARD_LIMIT * 3);
+        let actualTokens = estimateTokenCount(truncatedContent);
+
+        // Keep truncating until under limit
+        while (actualTokens > MAX_TOKEN_HARD_LIMIT && truncatedContent.length > 100) {
+          truncatedContent = truncatedContent.substring(0, Math.floor(truncatedContent.length * 0.9));
+          actualTokens = estimateTokenCount(truncatedContent);
+        }
+
         result.push({
           content: truncatedContent,
           section_ref: subsections[i].ref,
-          token_count: MAX_TOKEN_HARD_LIMIT,
+          token_count: actualTokens,
           hierarchy: chunk.hierarchy,
           source_url: chunk.source_url,
         });
@@ -115,12 +124,21 @@ function splitOversizedChunk(chunk: RegulationChunk): ProcessedChunk[] {
 
   // Cannot split - truncate and warn
   console.log(`    ⚠️  Cannot split chunk ${chunk.section_ref}. Truncating to ${MAX_TOKEN_HARD_LIMIT} tokens.`);
-  const truncatedContent = chunk.full_text.substring(0, MAX_TOKEN_HARD_LIMIT * 4);
+
+  // Truncate aggressively and re-check token count
+  let truncatedContent = chunk.full_text.substring(0, MAX_TOKEN_HARD_LIMIT * 3);
+  let actualTokens = estimateTokenCount(truncatedContent);
+
+  // Keep truncating until under limit
+  while (actualTokens > MAX_TOKEN_HARD_LIMIT && truncatedContent.length > 100) {
+    truncatedContent = truncatedContent.substring(0, Math.floor(truncatedContent.length * 0.9));
+    actualTokens = estimateTokenCount(truncatedContent);
+  }
 
   return [{
     content: truncatedContent,
     section_ref: chunk.section_ref,
-    token_count: MAX_TOKEN_HARD_LIMIT,
+    token_count: actualTokens,
     hierarchy: chunk.hierarchy,
     source_url: chunk.source_url,
   }];
@@ -188,7 +206,7 @@ async function main() {
   } else if (fetchError) {
     console.error('Error fetching zoning_docs:', fetchError);
     process.exit(1);
-  } else {
+  } else if (existingDoc) {
     docId = existingDoc.id;
     console.log(`  ✓ Found existing record: ${docId}`);
 
@@ -209,6 +227,9 @@ async function main() {
     } else {
       console.log('  ✓ Cleared existing embeddings\n');
     }
+  } else {
+    console.error('Unexpected state: no document found and no error');
+    process.exit(1);
   }
 
   // Step 4: Chunk all articles
@@ -266,6 +287,7 @@ async function main() {
     chunk_index: index,
     content: chunk.content,
     section_ref: chunk.section_ref,
+    hierarchy: chunk.hierarchy,
     token_count: chunk.token_count,
     embedding: embeddings[index],
   }));

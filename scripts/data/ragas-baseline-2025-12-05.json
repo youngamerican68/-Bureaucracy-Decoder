@@ -1,0 +1,1019 @@
+{
+  "timestamp": "2025-12-05T20:25:47.748Z",
+  "overall": {
+    "recall": 0.8,
+    "precision": 0.31999999999999995,
+    "hitRate": 0.86
+  },
+  "byCategory": {
+    "parking": {
+      "recall": 1,
+      "precision": 0.20000000000000004,
+      "hitRate": 1
+    },
+    "height": {
+      "recall": 0.8333333333333334,
+      "precision": 0.26666666666666666,
+      "hitRate": 1
+    },
+    "zoning": {
+      "recall": 0.75,
+      "precision": 0.2,
+      "hitRate": 0.75
+    },
+    "setbacks": {
+      "recall": 1,
+      "precision": 0.6000000000000001,
+      "hitRate": 1
+    },
+    "permits": {
+      "recall": 0.6666666666666666,
+      "precision": 0.26666666666666666,
+      "hitRate": 0.6666666666666666
+    },
+    "hillside": {
+      "recall": 0.5,
+      "precision": 0.1,
+      "hitRate": 0.5
+    },
+    "definitions": {
+      "recall": 1,
+      "precision": 0.3333333333333333,
+      "hitRate": 1
+    },
+    "density_bonus": {
+      "recall": 0.8,
+      "precision": 0.48,
+      "hitRate": 1
+    },
+    "toc": {
+      "recall": 0.5,
+      "precision": 0.30000000000000004,
+      "hitRate": 1
+    },
+    "housing_fees": {
+      "recall": 1,
+      "precision": 0.4,
+      "hitRate": 1
+    },
+    "subdivisions": {
+      "recall": 1,
+      "precision": 0.5,
+      "hitRate": 1
+    },
+    "emergency": {
+      "recall": 1,
+      "precision": 0.7,
+      "hitRate": 1
+    },
+    "permits_building": {
+      "recall": 0.6666666666666666,
+      "precision": 0.13333333333333333,
+      "hitRate": 0.6666666666666666
+    },
+    "fees_building": {
+      "recall": 0,
+      "precision": 0,
+      "hitRate": 0
+    },
+    "inspections": {
+      "recall": 0.6666666666666666,
+      "precision": 0.20000000000000004,
+      "hitRate": 0.6666666666666666
+    },
+    "co": {
+      "recall": 1,
+      "precision": 0.2,
+      "hitRate": 1
+    },
+    "grading": {
+      "recall": 0.75,
+      "precision": 0.5,
+      "hitRate": 1
+    },
+    "enforcement": {
+      "recall": 1,
+      "precision": 0.6000000000000001,
+      "hitRate": 1
+    },
+    "green_building": {
+      "recall": 1,
+      "precision": 0.26666666666666666,
+      "hitRate": 1
+    }
+  },
+  "results": [
+    {
+      "query": "parking requirements for restaurant in C2 zone",
+      "category": "parking",
+      "expectedSections": [
+        "12.21.A.4"
+      ],
+      "retrievedSections": [
+        "12.22.D.1",
+        "12.21.A.4_part1",
+        "11.5.1.2",
+        "11.5.2.1",
+        "12.22.D.4_part1"
+      ],
+      "topSimilarity": 0.08147401908801698,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "how many parking spaces per dwelling unit",
+      "category": "parking",
+      "expectedSections": [
+        "12.21.A.4"
+      ],
+      "retrievedSections": [
+        "12.22.D.1",
+        "12.22.D.2",
+        "9.2.1.2",
+        "12.21.A.4_part1",
+        "12.22.D.5_part1"
+      ],
+      "topSimilarity": 0.26209190721566417,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "parking ratio commercial building",
+      "category": "parking",
+      "expectedSections": [
+        "12.21.A.4"
+      ],
+      "retrievedSections": [
+        "12.22.D.1",
+        "12.22.D.2",
+        "12.21.A.4_part1",
+        "11.5.2.2",
+        "12.14"
+      ],
+      "topSimilarity": 0.25390887408216894,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "height limit R1 zone single family",
+      "category": "height",
+      "expectedSections": [
+        "12.08",
+        "12.21.1"
+      ],
+      "retrievedSections": [
+        "12.21.C.10_part1",
+        "12.22.C.25",
+        "12.08.3",
+        "15.4.3.1",
+        "12.24.X.10"
+      ],
+      "topSimilarity": 0.07257226934395014,
+      "recall": 0.5,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "maximum building height residential",
+      "category": "height",
+      "expectedSections": [
+        "12.21.1"
+      ],
+      "retrievedSections": [
+        "12.22.D.3",
+        "12.21.C.10_part1",
+        "12.21.1",
+        "12.22.D.4",
+        "91.1705.1"
+      ],
+      "topSimilarity": 0.09602319525049632,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "floor area ratio calculation",
+      "category": "height",
+      "expectedSections": [
+        "12.21.1",
+        "12.03"
+      ],
+      "retrievedSections": [
+        "12.22.D.3",
+        "9.3.2.2",
+        "14.2.7",
+        "12.03.4_part1",
+        "12.21.1"
+      ],
+      "topSimilarity": 0.2057859299889067,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "what uses are allowed in R1 zone",
+      "category": "zoning",
+      "expectedSections": [
+        "12.08"
+      ],
+      "retrievedSections": [
+        "12.24.W.36",
+        "12.08",
+        "12.24.W.15",
+        "12.08.3",
+        "1.6.5.1"
+      ],
+      "topSimilarity": 0.06393442622950819,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "R2 two family dwelling requirements",
+      "category": "zoning",
+      "expectedSections": [
+        "12.09"
+      ],
+      "retrievedSections": [
+        "12.09",
+        "12.22.C.20",
+        "15.4.3.1",
+        "91.1704.3",
+        "12.22.C.25"
+      ],
+      "topSimilarity": 0.04918032786885246,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "R3 multiple dwelling zone regulations",
+      "category": "zoning",
+      "expectedSections": [
+        "12.10"
+      ],
+      "retrievedSections": [
+        "12.09.1",
+        "9.2.5.3",
+        "9.2.2.3",
+        "12.10",
+        "12.21.C.1"
+      ],
+      "topSimilarity": 0.08233082706766917,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "C2 commercial zone permitted uses",
+      "category": "zoning",
+      "expectedSections": [
+        "12.14"
+      ],
+      "retrievedSections": [
+        "12.22.A.18",
+        "12.24.W.50",
+        "12.21.1",
+        "12.24.W.15",
+        "12.24.U.15"
+      ],
+      "topSimilarity": 0.09985322896281801,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "front yard setback exceptions",
+      "category": "setbacks",
+      "expectedSections": [
+        "12.22"
+      ],
+      "retrievedSections": [
+        "12.22.D.2",
+        "12.21.C.1",
+        "12.22.D.3",
+        "12.22.C.20",
+        "12.22.C.1"
+      ],
+      "topSimilarity": 0.09398877173764207,
+      "recall": 1,
+      "precision": 0.8,
+      "hit": true
+    },
+    {
+      "query": "side yard requirements residential",
+      "category": "setbacks",
+      "expectedSections": [
+        "12.22",
+        "12.08"
+      ],
+      "retrievedSections": [
+        "12.21.C.1",
+        "12.08.3",
+        "12.22.D.3",
+        "14.2.16",
+        "98.0403.1.11"
+      ],
+      "topSimilarity": 0.10684931506849314,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "conditional use permit requirements",
+      "category": "permits",
+      "expectedSections": [
+        "12.24"
+      ],
+      "retrievedSections": [
+        "1.6.5.1",
+        "12.24.U",
+        "1.6.1.1",
+        "12.24.X",
+        "12.24.W"
+      ],
+      "topSimilarity": 0.1507865107865108,
+      "recall": 1,
+      "precision": 0.6,
+      "hit": true
+    },
+    {
+      "query": "variance application hillside",
+      "category": "permits",
+      "expectedSections": [
+        "12.23",
+        "12.21.C"
+      ],
+      "retrievedSections": [
+        "12.24.X.11",
+        "12.24.X.21",
+        "14.2.6",
+        "91.7006.5",
+        "12.24.X.28"
+      ],
+      "topSimilarity": 0.06393442622950819,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "CUP process zoning administrator",
+      "category": "permits",
+      "expectedSections": [
+        "12.24"
+      ],
+      "retrievedSections": [
+        "1.6.1.1",
+        "1.6.1.11",
+        "1.6.1.3",
+        "1.6.1.2",
+        "12.24.W"
+      ],
+      "topSimilarity": 0.13186046511627908,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "hillside grading requirements",
+      "category": "hillside",
+      "expectedSections": [
+        "12.21.C"
+      ],
+      "retrievedSections": [
+        "12.24.X.28",
+        "12.24.X.21",
+        "12.21.C.1",
+        "91.7006.4",
+        "91.7006.5"
+      ],
+      "topSimilarity": 0.10159663865546219,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "slope regulations hillside area",
+      "category": "hillside",
+      "expectedSections": [
+        "12.21.C"
+      ],
+      "retrievedSections": [
+        "14.2.18",
+        "12.21.1",
+        "12.24.X.11",
+        "12.14",
+        "14.2.2"
+      ],
+      "topSimilarity": 0.09631467044649185,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "definition of dwelling unit",
+      "category": "definitions",
+      "expectedSections": [
+        "12.03"
+      ],
+      "retrievedSections": [
+        "12.03.5_part1",
+        "9.2.2.9",
+        "12.03.5_part2",
+        "12.22.D.33",
+        "9.2.1.1"
+      ],
+      "topSimilarity": 0.12720364741641338,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "what is floor area definition",
+      "category": "definitions",
+      "expectedSections": [
+        "12.03"
+      ],
+      "retrievedSections": [
+        "12.22.D.3",
+        "14.2.7",
+        "9.3.2.2",
+        "12.08",
+        "12.03.5_part2"
+      ],
+      "topSimilarity": 0.11721683658054437,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "accessory building definition",
+      "category": "definitions",
+      "expectedSections": [
+        "12.03"
+      ],
+      "retrievedSections": [
+        "11.5.1.2",
+        "11.5.2.2",
+        "12.03.5_part1",
+        "12.21.C.5",
+        "12.03.5_part2"
+      ],
+      "topSimilarity": 0.07975352112676057,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "DTLA TOC affordable housing bonus",
+      "category": "density_bonus",
+      "expectedSections": [
+        "9.2.1",
+        "9.2.7"
+      ],
+      "retrievedSections": [
+        "9.2.5.1",
+        "9.2.1.2",
+        "12.22.D.1",
+        "9.2.1.1",
+        "12.22.D.37"
+      ],
+      "topSimilarity": 0.17671277701282276,
+      "recall": 0.5,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "Downtown density bonus FAR",
+      "category": "density_bonus",
+      "expectedSections": [
+        "9.2.1"
+      ],
+      "retrievedSections": [
+        "12.22.D.3",
+        "12.22.D.1",
+        "9.2.1.4",
+        "12.22.D.6",
+        "9.2.1.1"
+      ],
+      "topSimilarity": 0.2718744164127944,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "state density bonus program eligibility",
+      "category": "density_bonus",
+      "expectedSections": [
+        "9.2.1"
+      ],
+      "retrievedSections": [
+        "9.2.1.1",
+        "9.2.1.4",
+        "9.2.1.2",
+        "12.22.D.3",
+        "12.22.D.1"
+      ],
+      "topSimilarity": 0.3196677007134015,
+      "recall": 1,
+      "precision": 0.6,
+      "hit": true
+    },
+    {
+      "query": "affordable housing incentive program",
+      "category": "density_bonus",
+      "expectedSections": [
+        "9.2.1",
+        "9.2.2"
+      ],
+      "retrievedSections": [
+        "9.2.2.1",
+        "9.2.2.2",
+        "12.22.D.1",
+        "12.22.D.39",
+        "12.22.D.3"
+      ],
+      "topSimilarity": 0.30177909769505556,
+      "recall": 0.5,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "density bonus 50 percent calculation",
+      "category": "density_bonus",
+      "expectedSections": [
+        "9.2.1"
+      ],
+      "retrievedSections": [
+        "12.22.D.3",
+        "9.2.1.2",
+        "9.2.1.1",
+        "9.2.1.4",
+        "12.24.U.25"
+      ],
+      "topSimilarity": 0.19391333790448637,
+      "recall": 1,
+      "precision": 0.6,
+      "hit": true
+    },
+    {
+      "query": "transit oriented communities incentive",
+      "category": "toc",
+      "expectedSections": [
+        "9.2.5",
+        "9.2.7",
+        "1.5.16"
+      ],
+      "retrievedSections": [
+        "1.5.16.1",
+        "12.22.D.1",
+        "9.2.5.1",
+        "12.22.D.6",
+        "12.22.C.31"
+      ],
+      "topSimilarity": 0.48337758751962523,
+      "recall": 0.6666666666666666,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "TOC parking reduction near transit",
+      "category": "toc",
+      "expectedSections": [
+        "9.2.5",
+        "9.2.7",
+        "9.2.1"
+      ],
+      "retrievedSections": [
+        "1.5.16.1",
+        "9.2.5.1",
+        "12.22.C.31",
+        "12.22.D.2",
+        "12.24.X.17"
+      ],
+      "topSimilarity": 0.24946064450946956,
+      "recall": 0.3333333333333333,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "affordable housing linkage fee",
+      "category": "housing_fees",
+      "expectedSections": [
+        "15.4"
+      ],
+      "retrievedSections": [
+        "15.4.3.1",
+        "15.4.3.2",
+        "12.22.C.29",
+        "15.4.3.5",
+        "12.22.D.39"
+      ],
+      "topSimilarity": 0.23469629380481438,
+      "recall": 1,
+      "precision": 0.6,
+      "hit": true
+    },
+    {
+      "query": "density bonus program fees",
+      "category": "housing_fees",
+      "expectedSections": [
+        "15.4"
+      ],
+      "retrievedSections": [
+        "9.2.1.1",
+        "12.22.D.37",
+        "12.24.U.25",
+        "15.4.1",
+        "12.22.D.4"
+      ],
+      "topSimilarity": 0.24285348081378172,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "Downtown subdivision tract map rules",
+      "category": "subdivisions",
+      "expectedSections": [
+        "11.5"
+      ],
+      "retrievedSections": [
+        "12.22.C.27",
+        "91.106",
+        "12.24.X.1",
+        "11.5.1.2",
+        "91.7003"
+      ],
+      "topSimilarity": 0.06861882619077542,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "condominium conversion requirements",
+      "category": "subdivisions",
+      "expectedSections": [
+        "11.5"
+      ],
+      "retrievedSections": [
+        "11.5.1.1",
+        "11.5.2.1",
+        "11.5.1.3",
+        "11.5.2.6",
+        "12.22.D.1"
+      ],
+      "topSimilarity": 0.21011320131448857,
+      "recall": 1,
+      "precision": 0.8,
+      "hit": true
+    },
+    {
+      "query": "emergency shelter homeless provisions",
+      "category": "emergency",
+      "expectedSections": [
+        "1.6"
+      ],
+      "retrievedSections": [
+        "1.6.3",
+        "1.6.2",
+        "1.6.1.1",
+        "91.109",
+        "1.6.5.2"
+      ],
+      "topSimilarity": 0.07359718080780699,
+      "recall": 1,
+      "precision": 0.8,
+      "hit": true
+    },
+    {
+      "query": "temporary use permit emergency",
+      "category": "emergency",
+      "expectedSections": [
+        "1.6"
+      ],
+      "retrievedSections": [
+        "1.6.1.1",
+        "1.6.1.2",
+        "1.6.5.2",
+        "91.7006.3",
+        "91.106"
+      ],
+      "topSimilarity": 0.29798044145346964,
+      "recall": 1,
+      "precision": 0.6,
+      "hit": true
+    },
+    {
+      "query": "when is a building permit required",
+      "category": "permits_building",
+      "expectedSections": [
+        "91.106"
+      ],
+      "retrievedSections": [
+        "91.106",
+        "91.1704.5",
+        "91.1704.1",
+        "12.21.1",
+        "91.108"
+      ],
+      "topSimilarity": 0.0875,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "permit exemptions minor work",
+      "category": "permits_building",
+      "expectedSections": [
+        "91.106"
+      ],
+      "retrievedSections": [
+        "15.4.3.1",
+        "12.22.D.33",
+        "91.1704.1",
+        "12.22.D.34",
+        "14.2.7"
+      ],
+      "topSimilarity": 0.08734813573523251,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "work requiring building permit",
+      "category": "permits_building",
+      "expectedSections": [
+        "91.106"
+      ],
+      "retrievedSections": [
+        "91.1704.1",
+        "91.106",
+        "11.5.2.1",
+        "14.2.15",
+        "11.5.1.1"
+      ],
+      "topSimilarity": 0.08017077798861481,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "building permit fee calculation",
+      "category": "fees_building",
+      "expectedSections": [
+        "91.107"
+      ],
+      "retrievedSections": [
+        "98.0403.2",
+        "91.108",
+        "91.109",
+        "14.2.10",
+        "12.21.C.5"
+      ],
+      "topSimilarity": 0.0590909090909091,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "LADBS permit fees schedule",
+      "category": "fees_building",
+      "expectedSections": [
+        "91.107"
+      ],
+      "retrievedSections": [
+        "98.0403.2",
+        "12.22.D.33",
+        "12.22.D.1_part1",
+        "12.24.X.1",
+        "91.106"
+      ],
+      "topSimilarity": 0.04642857142857143,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "required building inspections",
+      "category": "inspections",
+      "expectedSections": [
+        "91.108"
+      ],
+      "retrievedSections": [
+        "91.1704.1",
+        "91.1705.5",
+        "11.5.1.1",
+        "11.5.2.1",
+        "91.1704.2"
+      ],
+      "topSimilarity": 0.15623764822134387,
+      "recall": 0,
+      "precision": 0,
+      "hit": false
+    },
+    {
+      "query": "special inspection requirements",
+      "category": "inspections",
+      "expectedSections": [
+        "91.1705"
+      ],
+      "retrievedSections": [
+        "91.1705.5",
+        "91.1704.1",
+        "91.1704.3",
+        "91.1705.9",
+        "91.1704.2"
+      ],
+      "topSimilarity": 0.19672745694022292,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "structural observation requirements",
+      "category": "inspections",
+      "expectedSections": [
+        "91.1704"
+      ],
+      "retrievedSections": [
+        "91.1705.5",
+        "91.1704.1",
+        "91.1705.2",
+        "11.5.1.1",
+        "11.5.2.1"
+      ],
+      "topSimilarity": 0.18634151223976206,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "certificate of occupancy requirements",
+      "category": "co",
+      "expectedSections": [
+        "91.109"
+      ],
+      "retrievedSections": [
+        "12.21.C.1",
+        "91.109",
+        "1.4.2.1",
+        "12.22.D.4_part1",
+        "9.3.4.5"
+      ],
+      "topSimilarity": 0.076875,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "when is certificate of occupancy needed",
+      "category": "co",
+      "expectedSections": [
+        "91.109"
+      ],
+      "retrievedSections": [
+        "9.3.4.5",
+        "91.109",
+        "91.1704.5",
+        "91.1704.1",
+        "1.4.2.1"
+      ],
+      "topSimilarity": 0.08435998343807777,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "grading permit requirements",
+      "category": "grading",
+      "expectedSections": [
+        "91.7006",
+        "91.7003"
+      ],
+      "retrievedSections": [
+        "91.7006.4",
+        "91.7006.2",
+        "91.109",
+        "91.7006.3",
+        "91.7006.7"
+      ],
+      "topSimilarity": 0.18519028087845904,
+      "recall": 0.5,
+      "precision": 0.8,
+      "hit": true
+    },
+    {
+      "query": "grading definitions cut fill",
+      "category": "grading",
+      "expectedSections": [
+        "91.7003"
+      ],
+      "retrievedSections": [
+        "12.24.X.28",
+        "12.03.5_part1",
+        "91.7003",
+        "91.7006.4",
+        "91.7006.2"
+      ],
+      "topSimilarity": 0.0679746835443038,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "building code enforcement powers",
+      "category": "enforcement",
+      "expectedSections": [
+        "98.0403"
+      ],
+      "retrievedSections": [
+        "1.6.1.1",
+        "12.03.5_part1",
+        "12.23.B.3",
+        "98.0403.1.6",
+        "98.0403.1.7"
+      ],
+      "topSimilarity": 0.0945409429280397,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    },
+    {
+      "query": "LADBS department enforcement authority",
+      "category": "enforcement",
+      "expectedSections": [
+        "98.0403"
+      ],
+      "retrievedSections": [
+        "1.6.1.1",
+        "98.0403.1.1",
+        "98.0403.1.2",
+        "98.0403.1.3",
+        "98.0403.1.9"
+      ],
+      "topSimilarity": 0.10048483078383409,
+      "recall": 1,
+      "precision": 0.8,
+      "hit": true
+    },
+    {
+      "query": "CALGreen residential building code",
+      "category": "green_building",
+      "expectedSections": [
+        "99.04.100"
+      ],
+      "retrievedSections": [
+        "12.22.D.1",
+        "12.03.5_part1",
+        "99.05.100",
+        "99.04.100",
+        "99.05.303"
+      ],
+      "topSimilarity": 0.09546595373199476,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "CALGreen commercial building code",
+      "category": "green_building",
+      "expectedSections": [
+        "99.05.100"
+      ],
+      "retrievedSections": [
+        "12.03.5_part1",
+        "99.05.100",
+        "99.05.303",
+        "99.04.100",
+        "11.5.2.3"
+      ],
+      "topSimilarity": 0.057503586800573894,
+      "recall": 1,
+      "precision": 0.2,
+      "hit": true
+    },
+    {
+      "query": "green building water efficiency requirements",
+      "category": "green_building",
+      "expectedSections": [
+        "99.04.303",
+        "99.05.303"
+      ],
+      "retrievedSections": [
+        "99.05.303",
+        "99.11.602.2",
+        "99.04.303",
+        "91.108",
+        "12.22.D.1_part1"
+      ],
+      "topSimilarity": 0.120995670995671,
+      "recall": 1,
+      "precision": 0.4,
+      "hit": true
+    }
+  ]
+}

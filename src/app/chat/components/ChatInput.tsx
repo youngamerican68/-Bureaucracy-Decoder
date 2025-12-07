@@ -86,7 +86,7 @@ export function ChatInput({ onSend, disabled, showExamples }: ChatInputProps) {
       </div>
 
       <p className="text-xs text-stone-400 mt-2 text-center">
-        Press Enter to send, Shift+Enter for new line
+        Press Enter to send • <span className="text-stone-500">Informational only — not legal advice</span>
       </p>
     </div>
   );

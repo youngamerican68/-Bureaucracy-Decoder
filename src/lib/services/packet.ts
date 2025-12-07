@@ -166,6 +166,12 @@ Guidelines:
     '12.22.D.33',  // ADU regulations
     '12.22.C.25',  // Density Bonus
     '12.08',       // R1 Zone
+    '12.09',       // R2 Zone
+    '12.10',       // R3 Zone
+    '12.11',       // R4 Zone
+    '12.12',       // R5 Zone
+    '12.13',       // C1/C1.5 Commercial Zones
+    '12.14',       // C2/C4/C5 Commercial Zones
     '12.21.1',     // Height Districts
   ];
 
@@ -267,11 +273,13 @@ function extractCitations(
   const seenRefs = new Set<string>();
 
   // Look for section references in the response
-  const sectionPattern = /§[\d.]+[A-Za-z]*[\d.]*|Section\s+[\d.]+[A-Za-z]?[\d.]*/gi;
+  // Matches: §12.21.1, Section 12.21.1, [12.21.1.A.1], 12.21.A.4(d)(3)
+  const sectionPattern = /§[\d.]+[A-Za-z]*[\d.]*|Section\s+[\d.]+[A-Za-z]?[\d.]*|\[(\d+\.\d+[\w.()]*)\]|\b(\d{2}\.\d+[A-Za-z.()]*\d*)\b/gi;
   const matches = response.match(sectionPattern) || [];
 
   for (const match of matches) {
-    const normalizedRef = match.trim();
+    // Strip brackets if present: [12.21.1.A.1] → 12.21.1.A.1
+    const normalizedRef = match.trim().replace(/^\[|\]$/g, '');
     if (seenRefs.has(normalizedRef)) continue;
     seenRefs.add(normalizedRef);
 

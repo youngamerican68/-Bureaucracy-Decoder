@@ -5,7 +5,164 @@
 
 ---
 
-## 🎉 Latest Updates: Chat App + Hybrid RAG + Row-Level Parking Data (Dec 6, 2025)
+## 🎉 Latest Updates: Landing Page Overhaul + Animated Demo (Dec 6, 2025)
+
+### What Was Built:
+
+1. **✅ Animated Demo Component**
+   - New `AnimatedDemo.tsx` component showing real Q&A from the system
+   - Typewriter effect for questions and answers (15ms per character)
+   - Three rotating scenarios with exact text from real system responses
+   - Section reference highlighting for `[12.21.A.4]` and `§12.22.D.33` formats
+   - Citation card and confidence badge appear simultaneously after answer completes
+   - Replaced old dark-themed `HeroInterface3D` mockup in hero section
+   - File: `src/components/landing/AnimatedDemo.tsx`
+
+2. **✅ Landing Page Refinements (Based on UX Feedback)**
+   - **Standardized disclaimer** across hero, chat, and footer: "Informational only — not legal advice. Verify with official sources."
+   - **Added "For:" line** with target audience chips: Architects, Developers, Land-Use Attorneys
+   - **Added proof-points** under "Complexity of Compliance": 400+ pages, dozens of specific plans, frequent amendments
+   - **Updated "From Query to Citation" cards** with concrete examples:
+     - Card 1: "Ask a Real Question" with `"What's the max FAR in C2-1?"`
+     - Card 2: "Get the Relevant Code" with `§12.21.1.A.1`
+     - Card 3: "Verify & Validate" - explains validation step
+   - **Updated footer** with company jurisdiction: "© 2025 Leafspire LLC · Pennsylvania"
+   - **Reduced demo visual dominance**: Lighter shadow, smaller max-width, less border contrast
+   - **Removed duplicate demo** from "From Query to Citation" section
+   - **Removed "See Demo" button** from hero (demo now visible at top)
+   - **Fixed progress bar cutoff** in ComplianceMetricDiagram
+   - File: `src/app/page.tsx`, `src/components/landing/Diagrams.tsx`
+
+3. **✅ Demo Scenarios (Shorter, Punchier)**
+   - Replaced long parking/FAR/ADU answers with concise versions
+   - Questions: "What is the minimum lot size in R1?", "What is the maximum FAR in C2 with Height District 1?", "Can I build an ADU on my R1 property?"
+   - Answers highlight key numbers upfront (5,000 sq ft, 1.5:1, Yes)
+   - Faster demo cycle for snappier user experience
+
+4. **✅ Disclaimer Component Update**
+   - Unified wording in `src/app/chat/components/Disclaimer.tsx`
+   - Matches landing page and footer exactly
+
+### Key Files Changed:
+
+| File | Change |
+|------|--------|
+| `src/components/landing/AnimatedDemo.tsx` | New animated demo component |
+| `src/app/page.tsx` | Hero demo, disclaimers, For: line, proof-points, cards |
+| `src/components/landing/Diagrams.tsx` | Fixed progress bar text cutoff |
+| `src/app/chat/components/Disclaimer.tsx` | Standardized disclaimer text |
+
+### UX Improvements Summary:
+
+- Hero + demo feel more integrated, less "co-hero" competing
+- Consistent disclaimer messaging builds trust
+- Concrete examples (FAR in C2-1, §12.21.1.A.1) make value tangible
+- Audience chips clarify who the tool is for
+- Proof-points reinforce "this problem is real"
+- Company jurisdiction in footer adds legitimacy
+
+---
+
+## 🎉 Previous: Row-Level Parking Table Re-Ingestion (Dec 6, 2025)
+
+### Problem Solved:
+
+The original PDF-ingested §12.21.A.4 parking section was a single large chunk containing all use types mixed together. This caused poor retrieval for specific queries like "parking for restaurant in C2" because:
+- Vector search retrieved the whole section but couldn't pinpoint specific use types
+- BM25 found keyword matches but returned too much irrelevant content
+- The parking table format (use type → requirement) was lost in prose-style chunks
+
+### Solution: Surgical Row-Level Re-Ingestion
+
+Created 12 individual chunks, one per use type, with structured format:
+
+```
+§12.21.A.4 Off-Street Parking Requirements - Los Angeles Municipal Code
+
+USE TYPE: Restaurants, cafes, or similar eating establishments
+PARKING REQUIREMENT: 1 parking space for each 100 square feet of floor area
+NOTES: Includes indoor and outdoor dining areas. Drive-through facilities may have additional requirements.
+
+Related terms: restaurant, cafe, dining, eating, food service, bar, tavern, drive-through
+
+Section 12.21.A.4 - LAMC Chapter I (Zoning)
+```
+
+### Use Types Covered (12 rows):
+
+| Use Type | Parking Requirement |
+|----------|---------------------|
+| Restaurants, cafes | 1 per 100 sq ft |
+| Office buildings | 1 per 500 sq ft |
+| Retail stores | 1 per 250 sq ft |
+| Warehouses | 1 per 2,000 sq ft |
+| Hotels/motels | 1 per guest room |
+| Medical/dental offices | 1 per 200 sq ft |
+| Theaters/auditoriums | 1 per 5 seats or 35 sq ft |
+| Churches | 1 per 5 seats |
+| Schools | 1 per classroom |
+| Manufacturing | 1 per 500 sq ft |
+| Fitness centers | 1 per 100 sq ft |
+| Banks | 1 per 250 sq ft |
+
+### Key Files:
+
+| File | Purpose |
+|------|---------|
+| `scripts/data/parking-12.21.A.4.json` | Manual JSON with 12 parking rows + keywords |
+| `scripts/ingest-parking-table.ts` | Ingestion script for row-level chunks |
+
+### Database Result:
+
+- **Chunk indices:** 963-974 (12 new chunks)
+- **Section ref:** `12.21.A.4`
+- **Hierarchy:** `Chapter I > Article 2 > Section 12.21 > A.4 Off-Street Parking`
+- **Embedding model:** `text-embedding-3-large` (1536 dims)
+
+### Test Result:
+
+**Query:** "parking requirements for restaurant in C2"
+- **Before:** Low confidence, retrieved whole section without specific ratio
+- **After:** "1 parking space for each 100 square feet of floor area" with medium confidence
+
+### Why Row-Level Works Better:
+
+1. **Semantic precision:** Each chunk is about ONE use type, so vector similarity is highly targeted
+2. **Keyword boosting:** Related terms field improves BM25 matching
+3. **Structured format:** USE TYPE / REQUIREMENT / NOTES format is LLM-friendly for extraction
+4. **Smaller chunks:** ~150 tokens each vs 6000+ for full section
+
+---
+
+## 🎉 Previous: PWA Support for Mobile Installation (Dec 6, 2025)
+
+### What Was Built:
+
+1. **✅ Progressive Web App (PWA) Support**
+   - Added `manifest.json` with app metadata, theme colors, standalone mode
+   - Created SVG app icons (192x192 and 512x512) with amber "C" logo
+   - Configured Apple Web App meta tags for iOS home screen installation
+   - App launches directly to `/chat` in standalone mode (no browser chrome)
+   - Files: `public/manifest.json`, `public/icons/`, `src/app/layout.tsx`
+
+### How Users Install:
+
+**iPhone/iPad:**
+1. Open site in Safari
+2. Tap Share → "Add to Home Screen"
+3. App appears with amber "C" icon
+
+**Android:**
+1. Open in Chrome
+2. Chrome prompts "Add to Home Screen" or use menu → "Install app"
+
+### Production Status:
+- **PWA:** ✅ Live - Users can install as home screen app
+- **Commit:** `bfa298f`
+
+---
+
+## 🎉 Previous: Chat App + Hybrid RAG + Row-Level Parking Data (Dec 6, 2025)
 
 ### What Was Built:
 

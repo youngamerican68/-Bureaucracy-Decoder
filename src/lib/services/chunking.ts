@@ -67,8 +67,193 @@ function buildHierarchy(state: ParserState): string {
   return parts.join(' > ') || 'Unknown';
 }
 
+// =============================================================================
+// CHUNK SIZE LIMITS
+// =============================================================================
+
+const MAX_CHUNK_TOKENS = 6000; // Safe limit for embedding APIs (OpenAI limit is ~8K)
+
+/**
+ * Split an oversized chunk into smaller pieces based on subsection structure
+ *
+ * Strategy:
+ * 1. First try to split on lettered subsections (A., B., C., etc.)
+ * 2. If still too big, split on numbered items (1., 2., 3., 4., etc.)
+ * 3. If still too big, split on paragraphs
+ * 4. Last resort: hard split at token limit
+ */
+function splitOversizedChunk(chunk: RegulationChunk): RegulationChunk[] {
+  const tokens = chunk.token_count;
+
+  if (tokens <= MAX_CHUNK_TOKENS) {
+    return [chunk]; // No split needed
+  }
+
+  const text = chunk.full_text;
+  const lines = text.split('\n');
+
+  // Pattern for lettered subsections: "   A.   Use." or "A. Use."
+  const letteredSubsectionPattern = /^\s*([A-Z])\.\s+/;
+
+  // Pattern for numbered items: "   4.   Off-Street" or "4. Off-Street"
+  const numberedItemPattern = /^\s*(\d+)\.\s+/;
+
+  // Find split points (lettered subsections first)
+  const splitPoints: { index: number; label: string; type: 'letter' | 'number' }[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const letterMatch = lines[i].match(letteredSubsectionPattern);
+    if (letterMatch) {
+      splitPoints.push({ index: i, label: letterMatch[1], type: 'letter' });
+      continue;
+    }
+
+    // Only check for numbered items if they're at the start of a line (not indented numbers in text)
+    const numberMatch = lines[i].match(/^(\d+)\.\s+[A-Z]/);
+    if (numberMatch) {
+      splitPoints.push({ index: i, label: numberMatch[1], type: 'number' });
+    }
+  }
+
+  // If no split points found, try harder split on any paragraph break
+  if (splitPoints.length < 2) {
+    // Fall back to splitting at rough token boundaries
+    return hardSplitChunk(chunk, MAX_CHUNK_TOKENS);
+  }
+
+  // Create sub-chunks at each split point
+  const subChunks: RegulationChunk[] = [];
+  const baseSection = chunk.section_ref;
+  const baseHierarchy = chunk.hierarchy;
+
+  for (let i = 0; i < splitPoints.length; i++) {
+    const startLine = splitPoints[i].index;
+    const endLine = i + 1 < splitPoints.length ? splitPoints[i + 1].index : lines.length;
+
+    const subText = lines.slice(startLine, endLine).join('\n');
+    const subTokens = estimateTokenCount(subText);
+
+    // Build section ref: e.g., "12.21" + "A" = "12.21.A" or "12.21.A" + "4" = "12.21.A.4"
+    let subSectionRef = baseSection;
+    if (splitPoints[i].type === 'letter') {
+      subSectionRef = `${baseSection}.${splitPoints[i].label}`;
+    } else if (splitPoints[i].type === 'number') {
+      // For numbered items under a letter, try to inherit the letter
+      // Look back to find the parent letter
+      let parentLetter = '';
+      for (let j = i - 1; j >= 0; j--) {
+        if (splitPoints[j].type === 'letter') {
+          parentLetter = splitPoints[j].label;
+          break;
+        }
+      }
+      if (parentLetter) {
+        subSectionRef = `${baseSection}.${parentLetter}.${splitPoints[i].label}`;
+      } else {
+        subSectionRef = `${baseSection}.${splitPoints[i].label}`;
+      }
+    }
+
+    const subChunk: RegulationChunk = {
+      section_ref: subSectionRef,
+      heading: lines[startLine].trim(),
+      hierarchy: baseHierarchy,
+      full_text: cleanContent(subText),
+      token_count: subTokens,
+      source_url: chunk.source_url,
+    };
+
+    // Recursively split if still too big
+    if (subTokens > MAX_CHUNK_TOKENS) {
+      subChunks.push(...hardSplitChunk(subChunk, MAX_CHUNK_TOKENS));
+    } else if (subText.length > 50) {
+      subChunks.push(subChunk);
+    }
+  }
+
+  // Also capture any content before the first split point (the header/intro)
+  if (splitPoints.length > 0 && splitPoints[0].index > 0) {
+    const introText = lines.slice(0, splitPoints[0].index).join('\n');
+    const introTokens = estimateTokenCount(introText);
+
+    if (introText.length > 50) {
+      const introChunk: RegulationChunk = {
+        section_ref: baseSection,
+        heading: chunk.heading,
+        hierarchy: baseHierarchy,
+        full_text: cleanContent(introText),
+        token_count: introTokens,
+        source_url: chunk.source_url,
+      };
+
+      if (introTokens > MAX_CHUNK_TOKENS) {
+        subChunks.unshift(...hardSplitChunk(introChunk, MAX_CHUNK_TOKENS));
+      } else {
+        subChunks.unshift(introChunk);
+      }
+    }
+  }
+
+  return subChunks;
+}
+
+/**
+ * Hard split a chunk at token boundaries when structural splitting fails
+ */
+function hardSplitChunk(chunk: RegulationChunk, maxTokens: number): RegulationChunk[] {
+  const text = chunk.full_text;
+  const totalTokens = chunk.token_count;
+
+  if (totalTokens <= maxTokens) {
+    return [chunk];
+  }
+
+  const chunks: RegulationChunk[] = [];
+  const charsPerToken = 4; // Rough estimate
+  const maxChars = maxTokens * charsPerToken;
+
+  let startIdx = 0;
+  let partNum = 1;
+
+  while (startIdx < text.length) {
+    let endIdx = Math.min(startIdx + maxChars, text.length);
+
+    // Try to split at a paragraph boundary
+    if (endIdx < text.length) {
+      const nextParagraph = text.lastIndexOf('\n\n', endIdx);
+      if (nextParagraph > startIdx + maxChars * 0.5) {
+        endIdx = nextParagraph + 2;
+      } else {
+        // Try to split at sentence boundary
+        const nextSentence = text.lastIndexOf('. ', endIdx);
+        if (nextSentence > startIdx + maxChars * 0.5) {
+          endIdx = nextSentence + 2;
+        }
+      }
+    }
+
+    const partText = text.substring(startIdx, endIdx);
+    const partTokens = estimateTokenCount(partText);
+
+    chunks.push({
+      section_ref: `${chunk.section_ref}_part${partNum}`,
+      heading: partNum === 1 ? chunk.heading : `${chunk.heading} (continued)`,
+      hierarchy: chunk.hierarchy,
+      full_text: cleanContent(partText),
+      token_count: partTokens,
+      source_url: chunk.source_url,
+    });
+
+    startIdx = endIdx;
+    partNum++;
+  }
+
+  return chunks;
+}
+
 /**
  * Finalize the current chunk and add it to results
+ * Now includes automatic splitting of oversized chunks
  */
 function finalizeChunk(
   state: ParserState,
@@ -84,13 +269,17 @@ function finalizeChunk(
 
   // Only create chunk if it has meaningful content (> 50 chars)
   if (full_text.length > 50) {
-    chunks.push({
+    const rawChunk: RegulationChunk = {
       section_ref: state.currentSection,
       heading: state.currentHeading,
       hierarchy: buildHierarchy(state),
       full_text,
       token_count: estimateTokenCount(full_text),
-    });
+    };
+
+    // Split oversized chunks into smaller pieces
+    const finalChunks = splitOversizedChunk(rawChunk);
+    chunks.push(...finalChunks);
   }
 
   // Reset accumulator for next chunk

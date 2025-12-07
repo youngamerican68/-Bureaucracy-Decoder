@@ -13,6 +13,7 @@ import { config } from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
 import OpenAI from 'openai';
 import { chunkMunicipalCode } from '../src/lib/services/chunking';
+import { validateCoverage, printCoverageReport } from './coverage-guardrail';
 import pdfParse from 'pdf-parse';
 
 // Load environment variables
@@ -153,6 +154,24 @@ async function main() {
   console.log(`  Total tokens: ${totalTokens.toLocaleString()}`);
   console.log(`  Average tokens/chunk: ${avgTokens}`);
   console.log(`  Oversized chunks (>7500 tokens): ${oversizedChunks}`);
+  console.log();
+
+  // =========================================================================
+  // PHASE 1.5: COVERAGE GUARDRAIL CHECK
+  // =========================================================================
+
+  console.log('PHASE 1.5: Running coverage guardrail...');
+  console.log('-'.repeat(80));
+
+  const coveragePassed = printCoverageReport(chunks);
+
+  if (!coveragePassed) {
+    console.error('\n✗ COVERAGE GUARDRAIL FAILED!');
+    console.error('Critical sections are missing. Aborting ingestion.');
+    console.error('Fix the parser before re-running ingestion.');
+    process.exit(1);
+  }
+
   console.log();
 
   // =========================================================================

@@ -1,8 +1,9 @@
 import { SignIn } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-stone-50 px-4">
       <SignIn
         appearance={{
           elements: {
@@ -11,6 +12,13 @@ export default function SignInPage() {
           }
         }}
       />
+      <p className="mt-4 text-xs text-stone-500 text-center max-w-sm">
+        By using this service, you agree to our{' '}
+        <Link href="/terms" className="text-amber-600 hover:underline">
+          Terms of Use
+        </Link>
+        .
+      </p>
     </div>
   );
 }
